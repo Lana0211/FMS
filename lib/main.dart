@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'total.dart';
 
 import 'src/theme.dart'; // Import the theme file
 

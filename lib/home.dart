@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'total.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -7,11 +8,11 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'), // Replace with your app's title
+        title: const Text('Home'),
       ),
       body: Center(
         child: Text(
-          'Welcome to the Home Page!', // Replace with your actual content
+          'Welcome to the Home Page!',
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
@@ -21,7 +22,7 @@ class HomeScreen extends StatelessWidget {
         },
         tooltip: 'Increment',
         shape: const CircleBorder(),
-        child: const Icon(Icons.add), // Make the FAB circular
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
@@ -29,23 +30,26 @@ class HomeScreen extends StatelessWidget {
         notchMargin: 6.0,
         clipBehavior: Clip.antiAlias,
         child: SizedBox(
-          height: kBottomNavigationBarHeight, // Adjust the height as needed
+          height: kBottomNavigationBarHeight,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround, // Align items evenly
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               IconButton(
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.account_balance_wallet),
                 onPressed: () {
-                  // Handle refresh action
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TotalScreen()),
+                  );
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.book),
+                icon: const Icon(Icons.edit_document),
                 onPressed: () {
-                  // Handle book action
+                  // Handle edit_document action
                 },
               ),
-              const SizedBox(), // Add an empty SizedBox in the middle for the FAB
+              const SizedBox(),
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
@@ -65,3 +69,4 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+

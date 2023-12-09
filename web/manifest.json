@@ -1,11 +1,11 @@
 {
-    "name": "fms",
-    "short_name": "fms",
+    "name": "test01",
+    "short_name": "test01",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "DB term project",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
