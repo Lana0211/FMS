@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -186,14 +187,21 @@ class _LoginPageState extends State<LoginPage> {
     final String password = _loginPasswordController.text;
 
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:5000/login'),
-      body: {
+      Uri.parse('http://10.0.2.2:5000/api/accounts/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
         'account': account,
         'password': password,
-      },
+      }),
     );
-    print('LogIn');
+
+    if (response.statusCode == 401) {
+      print('Login failed: ${response.body}, $account, $password');
+    } else {
+      print('Login successful');
+    }
   }
+
 
   Future<void> _signup() async {
     final String account = _signupAccountController.text;
@@ -204,21 +212,27 @@ class _LoginPageState extends State<LoginPage> {
     final String phone = _phoneController.text;
 
     if (password != checkPassword) {
-      print('Password not matched.');
+      print('Password do not match.');
       return;
     }
 
     final response = await http.post(
-      Uri.parse('YOUR_FLASK_BACKEND_API_ENDPOINT/signup'),
-      body: {
+      Uri.parse('http://10.0.2.2:5000/api/accounts/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
         'account': account,
+        'password': password,
         'name': name,
         'mail': mail,
         'phone': phone,
-        'password': password,
-      },
+      }),
     );
-    print('SignUp');
+
+    if (response.statusCode == 201) {
+      print('Registration successful');
+    } else {
+      print('Registration failed: ${response.body}');
+    }
   }
 }
 
