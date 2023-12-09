@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
+import 'home.dart' as Home; // Import home.dart with a prefix
 import 'total.dart';
 
 import 'src/theme.dart'; // Import the theme file
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme, // Use the light theme
-      home: HomeScreen(),
+      home: Home.HomeScreen(), // Use the HomeScreen from home.dart
     );
   }
 }
