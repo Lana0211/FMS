@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'total.dart';
+import 'transaction.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -33,7 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => transactionScreen(recordType: '',)),
+          );
         },
         tooltip: 'Increment',
         shape: const CircleBorder(),
