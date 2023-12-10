@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => transactionScreen(recordType: '',)),
+            MaterialPageRoute(builder: (context) => TransactionScreen()),
           );
         },
         tooltip: 'Increment',
