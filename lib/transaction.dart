@@ -180,61 +180,6 @@ class _TransactionScreenState extends State<TransactionScreen>
               );
             }),
           ),
-          // Add input fields and buttons
-          TextField(
-            controller: remarkController,
-            decoration: InputDecoration(
-              labelText: 'Remark',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: dollarController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Dollar',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: typeController,
-                  decoration: InputDecoration(
-                    labelText: 'Type',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: dateController,
-            decoration: InputDecoration(
-              labelText: 'Date',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 8),
-          ElevatedButton(
-            onPressed: () {
-              // TODO: Handle save logic
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check),
-                const SizedBox(width: 8),
-                Text('Save'),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -242,17 +187,66 @@ class _TransactionScreenState extends State<TransactionScreen>
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      height: MediaQuery.of(context).size.height / 3,
+      height: MediaQuery.of(context).size.height / 2,
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
-      child: Center(
-        // Display selected type at the bottom
-        child: Text(
-          'Selected Type: $selectedType',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Remark
+              TextField(
+                controller: remarkController,
+                decoration: InputDecoration(
+                  labelText: 'Remark',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Selected Type
+              Text(
+                'Selected Type: $selectedType',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              // Display selected type at the bottom
+              const SizedBox(height: 8),
+              // Dollar
+              TextField(
+                controller: dollarController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Dollar',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Date
+              ElevatedButton(
+                onPressed: () => _selectDate(context),
+                child: Text('Select Date'),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != dateController.text) {
+      setState(() {
+        dateController.text = picked.toString();
+      });
+    }
   }
 
   Future<void> _saveDataAndReturnToHomePage() async {
