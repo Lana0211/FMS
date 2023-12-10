@@ -1,8 +1,24 @@
 import 'package:flutter/material.dart';
 import 'total.dart';
+import 'transaction.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String displayContent = 'Welcome to the Home Page!';
+
+  void updateContent(String content) {
+    setState(() {
+      displayContent = content;
+    });
+  }
+
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +28,16 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Center(
         child: Text(
-          'Welcome to the Home Page!',
+          displayContent,
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => transactionScreen(recordType: '',)),
+          );
         },
         tooltip: 'Increment',
         shape: const CircleBorder(),
@@ -40,14 +59,19 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => TotalScreen()),
-                  );
+                  ).then((value) {
+                    // This code runs when the TotalScreen page is popped.
+                    updateContent('Welcome to the Home Page!');
+                  });
                 },
+                color: _currentIndex == 0 ? Colors.blue : Colors.grey,
               ),
               IconButton(
                 icon: const Icon(Icons.edit_document),
                 onPressed: () {
                   // Handle edit_document action
                 },
+                color: _currentIndex == 1 ? Colors.blue : Colors.grey,
               ),
               const SizedBox(),
               IconButton(
@@ -55,12 +79,14 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   // Handle settings action
                 },
+                color: _currentIndex == 2 ? Colors.blue : Colors.grey,
               ),
               IconButton(
                 icon: const Icon(Icons.update),
                 onPressed: () {
                   // Handle update action
                 },
+                color: _currentIndex == 3 ? Colors.blue : Colors.grey,
               ),
             ],
           ),
@@ -69,4 +95,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
