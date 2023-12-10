@@ -43,137 +43,141 @@ class _LoginPageState extends State<LoginPage> {
           child: TabBarView(
             children: [
               // LogIn Tab
-              Column(
-                children: [
-                  const SizedBox(height: 16.0),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white, // 半透明白色
-                      borderRadius: BorderRadius.circular(5.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3), // changes the position of shadow
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: _loginAccountController,
-                          decoration: const InputDecoration(
-                            labelText: 'Account',
-                            border: OutlineInputBorder(),
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16.0),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white, // 半透明白色
+                        borderRadius: BorderRadius.circular(5.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3), // changes the position of shadow
                           ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextField(
-                          controller: _loginPasswordController,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            border: OutlineInputBorder(),
-                          ),
-                          obscureText: true,
-                        ),
-                        const SizedBox(height: 24.0),
-                        ElevatedButton(
-                          onPressed: _login,
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF66B3FF)),
-                          ),
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(
-                              color: Colors.white,
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: _loginAccountController,
+                            decoration: const InputDecoration(
+                              labelText: 'Account',
+                              border: OutlineInputBorder(),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16.0),
+                          TextField(
+                            controller: _loginPasswordController,
+                            decoration: const InputDecoration(
+                              labelText: 'Password',
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: true,
+                          ),
+                          const SizedBox(height: 24.0),
+                          ElevatedButton(
+                            onPressed: _login,
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF66B3FF)),
+                            ),
+                            child: const Text(
+                              'Log In',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               // SignUp Tab
-              Column(
-                children: [
-                  const SizedBox(height: 16.0),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.7), // 透明度
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Name',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextField(
-                          controller: _mailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Mail',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextField(
-                          controller: _phoneController,
-                          decoration: const InputDecoration(
-                            labelText: 'Phone',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextField(
-                          controller: _signupAccountController,
-                          decoration: const InputDecoration(
-                            labelText: 'Account',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextField(
-                          controller: _signupPasswordController,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            border: OutlineInputBorder(),
-                          ),
-                          obscureText: true,
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextField(
-                          controller: _checkPasswordController,
-                          decoration: const InputDecoration(
-                            labelText: 'Check Password',
-                            border: OutlineInputBorder(),
-                          ),
-                          obscureText: true,
-                        ),
-                        const SizedBox(height: 24.0),
-                        ElevatedButton(
-                          onPressed: _signup,
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF66B3FF)), // BTN color
-                          ),
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Colors.white,
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16.0),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.7), // 透明度
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Name',
+                              border: OutlineInputBorder(),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16.0),
+                          TextField(
+                            controller: _mailController,
+                            decoration: const InputDecoration(
+                              labelText: 'Mail',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          TextField(
+                            controller: _phoneController,
+                            decoration: const InputDecoration(
+                              labelText: 'Phone',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          TextField(
+                            controller: _signupAccountController,
+                            decoration: const InputDecoration(
+                              labelText: 'Account',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          TextField(
+                            controller: _signupPasswordController,
+                            decoration: const InputDecoration(
+                              labelText: 'Password',
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: true,
+                          ),
+                          const SizedBox(height: 16.0),
+                          TextField(
+                            controller: _checkPasswordController,
+                            decoration: const InputDecoration(
+                              labelText: 'Check Password',
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: true,
+                          ),
+                          const SizedBox(height: 24.0),
+                          ElevatedButton(
+                            onPressed: _signup,
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF66B3FF)), // BTN color
+                            ),
+                            child: const Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
