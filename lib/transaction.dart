@@ -196,21 +196,27 @@ class _TransactionScreenState extends State<TransactionScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Remark
-              TextField(
-                controller: remarkController,
-                decoration: InputDecoration(
-                  labelText: 'Remark',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 8),
               // Selected Type
               Text(
                 'Selected Type: $selectedType',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               // Display selected type at the bottom
+              const SizedBox(height: 8),
+              // Date
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _selectDate(context),
+                    child: Text('Select Date'),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${dateController.text}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
               const SizedBox(height: 8),
               // Dollar
               TextField(
@@ -222,10 +228,13 @@ class _TransactionScreenState extends State<TransactionScreen>
                 ),
               ),
               const SizedBox(height: 8),
-              // Date
-              ElevatedButton(
-                onPressed: () => _selectDate(context),
-                child: Text('Select Date'),
+              // Remark
+              TextField(
+                controller: remarkController,
+                decoration: InputDecoration(
+                  labelText: 'Remark',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 8),
             ],
@@ -242,9 +251,11 @@ class _TransactionScreenState extends State<TransactionScreen>
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != dateController.text) {
+    if (picked != null) {
+      // 格式化選擇的日期，只保留日期部分
+      final formattedDate = "${picked.year}-${picked.month}-${picked.day}";
       setState(() {
-        dateController.text = picked.toString();
+        dateController.text = formattedDate;
       });
     }
   }
