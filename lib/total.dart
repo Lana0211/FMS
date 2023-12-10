@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class TotalScreen extends StatefulWidget {
   @override
@@ -11,12 +13,64 @@ class TotalScreen extends StatefulWidget {
 class _TotalScreenState extends State<TotalScreen> {
   bool isExpenditure = true; //切換支出還是收入
   DateTime selectedDate = DateTime.now();
+  List<Map<String, dynamic>> typeAndAmountList = [];
+  double totalAmount = 0;
 
-  // 定義 typeAndAmountList
-  List<Map<String, dynamic>> typeAndAmountList = List.generate(
-    10,
-        (index) => {'type': 'Type $index', 'amount': (index + 1) * 10},
-  );
+  @override
+  void initState() {
+    super.initState();
+    fetchData(); // 初始时获取数据
+  }
+
+  Future<void> fetchData() async {
+    final String endpoint = isExpenditure
+        ? 'http://10.0.2.2:5000/api/expenditures'
+        : 'http://10.0.2.2:5000/api/incomes';
+    try {
+      final response = await http.get(Uri.parse(endpoint));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        // setState(() {
+        //   // 根据返回的 JSON 结构解析数据
+        //   typeAndAmountList = List<Map<String, dynamic>>.from(data['expenditure']);
+        //   totalAmount = double.parse(data['total_amount']);
+        // });
+        if (isExpenditure) {
+          // 处理支出数据
+          if (data['expenditures'] != null) {
+            setState(() {
+              typeAndAmountList = List<Map<String, dynamic>>.from(data['expenditures']);
+              totalAmount = double.parse(data['total_amount']);
+            });
+          } else {
+            // 如果 data['income'] 为 null，则应对 typeAndAmountList 进行适当处理
+            setState(() {
+              typeAndAmountList = [];
+              totalAmount = 0.0;
+            });
+          }
+        } else {
+          // 处理收入数据
+          if (data['incomes'] != null) {
+            setState(() {
+              typeAndAmountList = List<Map<String, dynamic>>.from(data['incomes']);
+              totalAmount = double.parse(data['total_amount']);
+            });
+          } else {
+            // 如果 data['income'] 为 null，则应对 typeAndAmountList 进行适当处理
+            setState(() {
+              typeAndAmountList = [];
+              totalAmount = 0.0;
+            });
+          }
+        }
+      } else {
+        print('Failed to load data');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -50,6 +104,7 @@ class _TotalScreenState extends State<TotalScreen> {
             onPressed: (int index) {
               setState(() {
                 isExpenditure = index == 0;
+                fetchData(); // 切换后重新获取数据
               });
             },
             children: const <Widget>[
@@ -79,8 +134,8 @@ class _TotalScreenState extends State<TotalScreen> {
             onTap: () => _selectDate(context), // 綁定 _selectDate
           ),
 
-          isExpenditure ? _buildExpenditurePieChart() : _buildIncomePieChart(),
-          _buildTotalExpenditure(), // 显示总支出
+          _buildPieChart(),
+          _buildTotalAmount(),
           const Divider(
             color: Colors.white,
             thickness: 1.0,
@@ -93,16 +148,15 @@ class _TotalScreenState extends State<TotalScreen> {
   }
 
 
-  Widget _buildExpenditurePieChart() {
-    // 模拟数据
-    List<PieChartSectionData> sections = List.generate(
-      typeAndAmountList.length,
-          (index) => PieChartSectionData(
+  Widget _buildPieChart() {
+    List<PieChartSectionData> sections = typeAndAmountList.map((dataItem) {
+      int index = typeAndAmountList.indexOf(dataItem);
+      return PieChartSectionData(
         color: Colors.primaries[index % Colors.primaries.length],
-        value: typeAndAmountList[index]['amount'].toDouble(),
-        title: '${typeAndAmountList[index]['amount']}',
-      ),
-    );
+        value: double.parse(dataItem['amount'].toString()), // 确保转换为 double 类型
+        title: '${dataItem['amount']}',
+      );
+    }).toList();
 
     return Container(
       padding: const EdgeInsets.all(5.0),
@@ -119,59 +173,27 @@ class _TotalScreenState extends State<TotalScreen> {
     );
   }
 
-  Widget _buildIncomePieChart() {
-    // 模擬數據
-    List<Map<String, dynamic>> incomeTypeAndAmountList = List.generate(
-      10,
-          (index) => {'type': 'Income Type $index', 'amount': (index + 1) * 15},
-    );
 
-    List<PieChartSectionData> sections = List.generate(
-      incomeTypeAndAmountList.length,
-          (index) => PieChartSectionData(
-        color: Colors.primaries[index % Colors.primaries.length],
-        value: incomeTypeAndAmountList[index]['amount'].toDouble(),
-        title: '${incomeTypeAndAmountList[index]['amount']}',
-      ),
-    );
-
-    return Container(
-      padding: const EdgeInsets.all(5.0),
-      width: 100.0, // 调整饼图的宽度
-      height: 150.0, // 调整饼图的高度
-      child: PieChart(
-        PieChartData(
-          sections: sections,
-          centerSpaceRadius: 30.0, // 调整饼图中心空白区域的半径
-          borderData: FlBorderData(show: false),
-          sectionsSpace: 0, // 调整饼图各部分之间的间隔
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTotalExpenditure() {
-    int totalExpenditure = typeAndAmountList.fold(
-        0, (sum, item) => sum + (item['amount'] as int));
-
+  Widget _buildTotalAmount() {
+    final String typeLabel = isExpenditure ? 'Expenditure' : 'Income';
     return Container(
       padding: const EdgeInsets.all(16.0),
       child: Text(
-        'Total Expenditure: \$${totalExpenditure.toString()}',
-        style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+        'Total $typeLabel: \$${totalAmount.toStringAsFixed(2)}',
+        style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
       ),
     );
   }
 
   Widget _buildTypeAndAmountList(BuildContext context) {
+    final String typeLabel = isExpenditure ? 'expenditure' : 'income';
     return Expanded(
       child: ListView.builder(
         itemCount: typeAndAmountList.length,
         itemBuilder: (BuildContext context, int index) {
           final Map<String, dynamic> item = typeAndAmountList[index];
-
           return ListTile(
-            title: Text(item['type']),
+            title: Text('${item['type']}'),
             subtitle: Text('Amount: \$${item['amount']}'),
             onTap: () {
               Navigator.push(
@@ -187,6 +209,7 @@ class _TotalScreenState extends State<TotalScreen> {
     );
   }
 }
+
 
 // 添加你的新页面的 Widget
 class YourNewPage extends StatelessWidget {

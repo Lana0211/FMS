@@ -200,8 +200,8 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     if (response.statusCode == 401) {
-      print('Login failed: ${response.body}, $account, $password');
-    } else {
+      print('Login failed: ${response.body}');
+    } else if (response.statusCode == 200){
       print('Login successful');
     }
   }
