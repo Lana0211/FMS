@@ -19,22 +19,20 @@ class _TotalScreenState extends State<TotalScreen> {
   @override
   void initState() {
     super.initState();
-    fetchData(); // 初始时获取数据
+    fetchData(); // 初始化數據
   }
 
   Future<void> fetchData() async {
+    final String year = selectedDate.year.toString();
+    final String month = selectedDate.month.toString().padLeft(2, '0'); // 確保月份是兩位數
     final String endpoint = isExpenditure
-        ? 'http://10.0.2.2:5000/api/expenditures'
-        : 'http://10.0.2.2:5000/api/incomes';
+        ? 'http://10.0.2.2:5000/api/expenditures?year=$year&month=$month'
+        : 'http://10.0.2.2:5000/api/incomes?year=$year&month=$month';
+
     try {
       final response = await http.get(Uri.parse(endpoint));
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        // setState(() {
-        //   // 根据返回的 JSON 结构解析数据
-        //   typeAndAmountList = List<Map<String, dynamic>>.from(data['expenditure']);
-        //   totalAmount = double.parse(data['total_amount']);
-        // });
         if (isExpenditure) {
           // 处理支出数据
           if (data['expenditures'] != null) {
@@ -43,7 +41,6 @@ class _TotalScreenState extends State<TotalScreen> {
               totalAmount = double.parse(data['total_amount']);
             });
           } else {
-            // 如果 data['income'] 为 null，则应对 typeAndAmountList 进行适当处理
             setState(() {
               typeAndAmountList = [];
               totalAmount = 0.0;
@@ -57,7 +54,6 @@ class _TotalScreenState extends State<TotalScreen> {
               totalAmount = double.parse(data['total_amount']);
             });
           } else {
-            // 如果 data['income'] 为 null，则应对 typeAndAmountList 进行适当处理
             setState(() {
               typeAndAmountList = [];
               totalAmount = 0.0;
@@ -73,19 +69,23 @@ class _TotalScreenState extends State<TotalScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    final initialDate = DateTime(selectedDate.year, selectedDate.month, 1);
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: selectedDate.isAfter(DateTime.now()) ? DateTime.now() : initialDate,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2023),
-      initialEntryMode: DatePickerEntryMode.calendarOnly, // 顯示日曆
-      // 只允許選擇年/月
+      lastDate: DateTime(2025),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
       selectableDayPredicate: (DateTime day) => day.day == 1,
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = DateTime(picked.year, picked.month);
+        typeAndAmountList = []; // 清空列表
+        totalAmount = 0.0; // 重置總價
       });
+      fetchData(); // 獲得新數據
     }
   }
 
@@ -134,27 +134,51 @@ class _TotalScreenState extends State<TotalScreen> {
             onTap: () => _selectDate(context), // 綁定 _selectDate
           ),
 
-          _buildPieChart(),
-          _buildTotalAmount(),
-          const Divider(
-            color: Colors.white,
-            thickness: 1.0,
-          ),
-          // Type and Amount
-          _buildTypeAndAmountList(context),
+          if (typeAndAmountList.isNotEmpty) ...[
+            _buildPieChart(),
+            _buildTotalAmount(),
+            const Divider(color: Colors.white, thickness: 1.0),
+            _buildTypeAndAmountList(context),
+          ] else ...[
+            _buildEmptyPieChart(),
+            _buildTotalAmount(),
+            const Divider(color: Colors.white, thickness: 1.0),
+          ],
         ],
       ),
     );
   }
 
+  Widget _buildEmptyPieChart() {
+    return Container(
+      padding: const EdgeInsets.all(5.0),
+      width: 100.0,
+      height: 150.0,
+      child: PieChart(
+        PieChartData(
+          sections: [
+            PieChartSectionData(
+              color: Colors.grey,
+              value: 100, // 一个满圆
+              title: '', // 没有标题
+            ),
+          ],
+          centerSpaceRadius: 30.0,
+          borderData: FlBorderData(show: false),
+          sectionsSpace: 0,
+        ),
+      ),
+    );
+  }
 
   Widget _buildPieChart() {
     List<PieChartSectionData> sections = typeAndAmountList.map((dataItem) {
       int index = typeAndAmountList.indexOf(dataItem);
+      int roundedAmount = double.parse(dataItem['amount'].toString()).round();
       return PieChartSectionData(
         color: Colors.primaries[index % Colors.primaries.length],
-        value: double.parse(dataItem['amount'].toString()), // 确保转换为 double 类型
-        title: '${dataItem['amount']}',
+        value: roundedAmount.toDouble(), // 必須為double
+        title: '$roundedAmount',
       );
     }).toList();
 
@@ -186,7 +210,6 @@ class _TotalScreenState extends State<TotalScreen> {
   }
 
   Widget _buildTypeAndAmountList(BuildContext context) {
-    final String typeLabel = isExpenditure ? 'expenditure' : 'income';
     return Expanded(
       child: ListView.builder(
         itemCount: typeAndAmountList.length,
