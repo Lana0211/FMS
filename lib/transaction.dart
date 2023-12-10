@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TransactionScreen extends StatefulWidget {
   @override
@@ -89,14 +90,14 @@ class _TransactionScreenState extends State<TransactionScreen>
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             actions: [
               IconButton(
-                icon: Icon(Icons.check),
+                icon: const Icon(Icons.check),
                 onPressed: () {
                   // TODO: Add logic to save data and return to homepage
                   _saveDataAndReturnToHomePage();
@@ -105,7 +106,7 @@ class _TransactionScreenState extends State<TransactionScreen>
             ],
             bottom: TabBar(
               controller: _tabController,
-              tabs: [
+              tabs: const [
                 Tab(text: 'Expenditure'),
                 Tab(text: 'Income'),
               ],
@@ -156,7 +157,6 @@ class _TransactionScreenState extends State<TransactionScreen>
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: type == selectedType ? Colors.blue : null,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -199,7 +199,7 @@ class _TransactionScreenState extends State<TransactionScreen>
               // Selected Type
               Text(
                 'Selected Type: $selectedType',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               // Display selected type at the bottom
               const SizedBox(height: 8),
@@ -208,12 +208,12 @@ class _TransactionScreenState extends State<TransactionScreen>
                 children: [
                   ElevatedButton(
                     onPressed: () => _selectDate(context),
-                    child: Text('Select Date'),
+                    child: const Text('Select Date'),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '${dateController.text}',
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ],
               ),
@@ -222,7 +222,10 @@ class _TransactionScreenState extends State<TransactionScreen>
               TextField(
                 controller: dollarController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                inputFormatters: <TextInputFormatter>[ //只能輸入數字
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                decoration: const InputDecoration(
                   labelText: 'Dollar',
                   border: OutlineInputBorder(),
                 ),
@@ -231,7 +234,8 @@ class _TransactionScreenState extends State<TransactionScreen>
               // Remark
               TextField(
                 controller: remarkController,
-                decoration: InputDecoration(
+                maxLength: 30, //字數限制
+                decoration: const InputDecoration(
                   labelText: 'Remark',
                   border: OutlineInputBorder(),
                 ),
@@ -263,7 +267,7 @@ class _TransactionScreenState extends State<TransactionScreen>
   Future<void> _saveDataAndReturnToHomePage() async {
     // TODO: Add logic to save data to the database
     // Simulate a delay (replace with your actual saving logic)
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     // Navigate back to the home page
     Navigator.of(context).pop();
