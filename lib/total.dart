@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:month_picker_dialog/month_picker_dialog.dart';
+
 class TotalScreen extends StatefulWidget {
   @override
   _TotalScreenState createState() => _TotalScreenState();
@@ -68,25 +70,42 @@ class _TotalScreenState extends State<TotalScreen> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final initialDate = DateTime(selectedDate.year, selectedDate.month, 1);
+  // Future<void> _selectDate(BuildContext context) async {
+  //   final initialDate = DateTime(selectedDate.year, selectedDate.month, 1);
+  //
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: selectedDate.isAfter(DateTime.now()) ? DateTime.now() : initialDate,
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime(2025),
+  //     initialEntryMode: DatePickerEntryMode.calendarOnly,
+  //     // selectableDayPredicate: (DateTime day) => day.day == 1,
+  //   );
+  //   if (picked != null && picked != selectedDate) {
+  //     setState(() {
+  //       selectedDate = DateTime(picked.year, picked.month);
+  //       typeAndAmountList = []; // 清空列表
+  //       totalAmount = 0.0; // 重置總價
+  //     });
+  //     fetchData(); // 獲得新數據
+  //   }
+  // }
 
-    final DateTime? picked = await showDatePicker(
+  Future<void> _selectMonthYear(BuildContext context) async {
+    showMonthPicker(
       context: context,
-      initialDate: selectedDate.isAfter(DateTime.now()) ? DateTime.now() : initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
-      // selectableDayPredicate: (DateTime day) => day.day == 1,
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = DateTime(picked.year, picked.month);
-        typeAndAmountList = []; // 清空列表
-        totalAmount = 0.0; // 重置總價
-      });
-      fetchData(); // 獲得新數據
-    }
+      initialDate: DateTime.now(),
+    ).then((date) {
+      if (date != null && date != selectedDate) {
+        setState(() {
+          selectedDate = DateTime(date.year, date.month);
+          typeAndAmountList = []; // 清空列表
+          totalAmount = 0.0; // 重置總價
+        });
+        fetchData(); // 獲得新數據
+      }
+    });
+
   }
 
   @override
@@ -100,6 +119,11 @@ class _TotalScreenState extends State<TotalScreen> {
       body: Column(
         children: [
           ToggleButtons(
+            constraints: const BoxConstraints(
+              minHeight: 30.0, // 最小高度
+              maxHeight: 40.0, // 最大高度
+            ),
+
             isSelected: [isExpenditure, !isExpenditure],
             onPressed: (int index) {
               setState(() {
@@ -131,7 +155,7 @@ class _TotalScreenState extends State<TotalScreen> {
                 ],
               ),
             ),
-            onTap: () => _selectDate(context), // 綁定 _selectDate
+            onTap: () => _selectMonthYear(context), // 綁定 _selectDate
           ),
 
           if (typeAndAmountList.isNotEmpty) ...[
@@ -219,10 +243,16 @@ class _TotalScreenState extends State<TotalScreen> {
             title: Text('${item['date']}'),
             subtitle: Text('${item['type']} - \$${item['amount']}'),
             onTap: () {
+              // 获取被点击项的年月字符串
+              String yearMonth = DateFormat('yyyy-MM').format(DateTime.parse(item['date']));
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => YourNewPage(),
+                  builder: (context) => TypeTotalPage(
+                    type: item['type'],
+                    yearMonth: yearMonth,
+                    allData: typeAndAmountList,
+                  ),
                 ),
               );
             },
@@ -234,16 +264,35 @@ class _TotalScreenState extends State<TotalScreen> {
 }
 
 
-// 添加你的新页面的 Widget
-class YourNewPage extends StatelessWidget {
+class TypeTotalPage extends StatelessWidget {
+  final String type;
+  final String yearMonth;
+  final List<Map<String, dynamic>> allData;
+
+  TypeTotalPage({required this.type, required this.yearMonth, required this.allData});
+
   @override
   Widget build(BuildContext context) {
+    // 找出相同類型和年月的資料
+    List<Map<String, dynamic>> filteredData = allData.where((item) {
+      DateTime date = DateTime.parse(item['date']);
+      // 格式化日期
+      String itemYearMonth = DateFormat('yyyy-MM').format(date);
+      return item['type'] == type && itemYearMonth == yearMonth;
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your New Page'),
+        title: Text('$type - $yearMonth'),
       ),
-      body: Center(
-        child: Text('This is your new page content.'),
+      body: ListView.builder(
+        itemCount: filteredData.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text('${filteredData[index]['date']}'),
+            subtitle: Text('${filteredData[index]['type']} - \$${filteredData[index]['amount']}'),
+          );
+        },
       ),
     );
   }
