@@ -77,7 +77,7 @@ class _TotalScreenState extends State<TotalScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2025),
       initialEntryMode: DatePickerEntryMode.calendarOnly,
-      selectableDayPredicate: (DateTime day) => day.day == 1,
+      // selectableDayPredicate: (DateTime day) => day.day == 1,
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -216,8 +216,8 @@ class _TotalScreenState extends State<TotalScreen> {
         itemBuilder: (BuildContext context, int index) {
           final Map<String, dynamic> item = typeAndAmountList[index];
           return ListTile(
-            title: Text('${item['type']}'),
-            subtitle: Text('Amount: \$${item['amount']}'),
+            title: Text('${item['date']}'),
+            subtitle: Text('${item['type']} - \$${item['amount']}'),
             onTap: () {
               Navigator.push(
                 context,
