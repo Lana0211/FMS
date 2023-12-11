@@ -118,10 +118,12 @@ class _TransactionScreenState extends State<TransactionScreen>
           body: TabBarView(
             controller: _tabController,
             children: [
-              // Expenditure Tab
-              _buildTypeSelection(expenditureTypes, expenditureIcons),
-              // Income Tab
-              _buildTypeSelection(incomeTypes, incomeIcons),
+              SingleChildScrollView(
+                child: _buildTypeSelection(expenditureTypes, expenditureIcons),
+              ),
+              SingleChildScrollView(
+                child: _buildTypeSelection(incomeTypes, incomeIcons),
+              ),
             ],
           ),
           bottomNavigationBar: _buildBottomNavigationBar(),
