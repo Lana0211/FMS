@@ -2,13 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'src/theme.dart';
-import 'home.dart';
 import 'total.dart';
 import 'budget.dart';
 import 'stock.dart';
 import 'accounting.dart';
 import 'transaction.dart';
-import 'login_check.dart';
 import 'login_page.dart';
 
 
