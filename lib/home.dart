@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'total.dart';
 import 'transaction.dart';
 import 'budget.dart';
+import 'stock.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -85,6 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => StockScreen()),
+                  ).then((value) {
+                    // This code runs when the TotalScreen page is popped.
+                    updateContent('Welcome to the Home Page!');
+                  });
                   // Handle settings action
                 },
                 color: _currentIndex == 2 ? Colors.blue : Colors.grey,
