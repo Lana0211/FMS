@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'stock_add.dart';
 
 class StockScreen extends StatefulWidget {
   @override
@@ -17,6 +18,19 @@ class _StockScreenState extends State<StockScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Stocks'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            iconSize: 30.0,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => StockAddScreen(),
+                ),
+              );
+            },
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(80.0),
           child: Column(
