@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'src/theme.dart';
 import 'dart:convert';
-
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 class TotalScreen extends StatefulWidget {
@@ -70,27 +70,6 @@ class _TotalScreenState extends State<TotalScreen> {
     }
   }
 
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final initialDate = DateTime(selectedDate.year, selectedDate.month, 1);
-  //
-  //   final DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: selectedDate.isAfter(DateTime.now()) ? DateTime.now() : initialDate,
-  //     firstDate: DateTime(2000),
-  //     lastDate: DateTime(2025),
-  //     initialEntryMode: DatePickerEntryMode.calendarOnly,
-  //     // selectableDayPredicate: (DateTime day) => day.day == 1,
-  //   );
-  //   if (picked != null && picked != selectedDate) {
-  //     setState(() {
-  //       selectedDate = DateTime(picked.year, picked.month);
-  //       typeAndAmountList = []; // 清空列表
-  //       totalAmount = 0.0; // 重置總價
-  //     });
-  //     fetchData(); // 獲得新數據
-  //   }
-  // }
-
   Future<void> _selectMonthYear(BuildContext context) async {
     showMonthPicker(
       context: context,
@@ -105,7 +84,6 @@ class _TotalScreenState extends State<TotalScreen> {
         fetchData(); // 獲得新數據
       }
     });
-
   }
 
   @override
@@ -120,7 +98,7 @@ class _TotalScreenState extends State<TotalScreen> {
         children: [
           ToggleButtons(
             constraints: const BoxConstraints(
-              minHeight: 30.0, // 最小高度
+              minHeight: 25.0, // 最小高度
               maxHeight: 40.0, // 最大高度
             ),
 
@@ -133,23 +111,23 @@ class _TotalScreenState extends State<TotalScreen> {
             },
             children: const <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Text('Expenditure'),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Text('Income'),
               ),
             ],
           ),
           InkWell( // 日曆彈窗
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(5),
               child: Row(
                 mainAxisSize: MainAxisSize.min, // 限制 Row 的大小僅包裹其內容
                 mainAxisAlignment: MainAxisAlignment.center, // 水平居中
                 children: <Widget>[
-                  const Icon(Icons.calendar_today, size: 24.0), // 日曆圖標
+                  const Icon(Icons.calendar_today, size: 15.0), // 日曆圖標
                   const SizedBox(width: 8.0), // 圖標和文本之間的間隙
                   Text(formattedDate), // 顯示格式化的日期
                 ],
@@ -177,7 +155,7 @@ class _TotalScreenState extends State<TotalScreen> {
     return Container(
       padding: const EdgeInsets.all(5.0),
       width: 100.0,
-      height: 150.0,
+      height: 200.0,
       child: PieChart(
         PieChartData(
           sections: [
@@ -208,7 +186,7 @@ class _TotalScreenState extends State<TotalScreen> {
 
     return Container(
       padding: const EdgeInsets.all(5.0),
-      width: 100.0,
+      // width: 100.0,
       height: 150.0,
       child: PieChart(
         PieChartData(
@@ -225,10 +203,10 @@ class _TotalScreenState extends State<TotalScreen> {
   Widget _buildTotalAmount() {
     final String typeLabel = isExpenditure ? 'Expenditure' : 'Income';
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(5.0),
       child: Text(
         'Total $typeLabel: \$${totalAmount.toStringAsFixed(2)}',
-        style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: AppTheme.textColor),
       ),
     );
   }
@@ -239,23 +217,43 @@ class _TotalScreenState extends State<TotalScreen> {
         itemCount: typeAndAmountList.length,
         itemBuilder: (BuildContext context, int index) {
           final Map<String, dynamic> item = typeAndAmountList[index];
-          return ListTile(
-            title: Text('${item['date']}'),
-            subtitle: Text('${item['type']} - \$${item['amount']}'),
-            onTap: () {
-              // 获取被点击项的年月字符串
-              String yearMonth = DateFormat('yyyy-MM').format(DateTime.parse(item['date']));
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TypeTotalPage(
-                    type: item['type'],
-                    yearMonth: yearMonth,
-                    allData: typeAndAmountList,
-                  ),
+
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0), // Add some spacing around each item
+            decoration: BoxDecoration(
+              color: AppTheme.listBackgroundColor, // Set the background color
+              borderRadius: BorderRadius.circular(10.0), // Rounded corners
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2), // Shadow color with some transparency
+                  spreadRadius: 2,
+                  blurRadius: 4,
+                  offset: Offset(0, 3), // Changes position of shadow
                 ),
-              );
-            },
+              ],
+            ),
+            child: ListTile(
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${item['type']}'),
+                        Text('${item['date']}'),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    '${item['amount']}',
+                    style: TextStyle(
+                      color: item['amount'].startsWith('-') ? Colors.red : Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         },
       ),

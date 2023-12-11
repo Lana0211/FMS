@@ -7,6 +7,9 @@ class AppTheme {
   // Assuming you want a similar color for the floating action button
   static const Color floatingActionButtonColor = Colors.white;
 
+  // Assuming you want a similar color for the floating action button
+  static const Color listBackgroundColor = Colors.white70;
+
   // If the text color is not provided, we're defaulting to dark grey
   static const Color textColor = Colors.black87;
 

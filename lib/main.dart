@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'src/theme.dart';
 import 'home.dart';
 import 'total.dart';
-// import 'budget.dart';
-// import 'stock.dart';
-// import 'user.dart';
+import 'budget.dart';
+import 'stock.dart';
+import 'accounting.dart';
 import 'transaction.dart';
 
 
@@ -33,8 +33,8 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     TotalScreen(),
-    TotalScreen(),
-    HomeScreen(),
+    BudgetScreen(),
+    AccountingScreen(),
     TotalScreen(),
     // The TransactionScreen is not part of the bottom navigation pages
   ];
