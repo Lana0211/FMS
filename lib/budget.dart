@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'budget_add.dart';
 
 class BudgetScreen extends StatefulWidget {
   @override
@@ -44,6 +45,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
         title: Center(
           child: const Text('Budget'),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              _navigateToBudgetAdd(context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -150,6 +159,20 @@ class _BudgetScreenState extends State<BudgetScreen> {
         ),
       ),
     );
+  }
+  void _navigateToBudgetAdd(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => BudgetAddScreen()),
+    ).then((value) {
+      // Handle the result when the BudgetAddScreen page is popped.
+      if (value != null) {
+        // Assuming value is the newly added budget data.
+        // You can handle the data as needed.
+        // For example, update the UI with the new data.
+        // Update the budgets list and any other necessary data.
+      }
+    });
   }
 }
 
