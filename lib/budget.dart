@@ -1,4 +1,3 @@
-// TODO: rebase final version on this
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -74,7 +73,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 child: Stack(
                   children: [
                     // BarChart
-                    BarChart(
+                    BarChartWidget(
                       barData: BarData(
                         expenditureTypes: expenditureTypes,
                         expenditures: expenditures,
@@ -95,12 +94,58 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 ),
               ),
             ),
-            // Display Expenditure Type, Budget, Expenditure
-            for (int i = 0; i < expenditureTypes.length; i++)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('${expenditureTypes[i]} - Expenditure: \$${expenditures[i]} | Budget: \$${budgets[i]}'),
+            // White Separator Line
+            Container(
+              height: 1,
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+            ),
+            // Display Expenditure Type, Expenditure, Budget
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  // Expenditure Type
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < expenditureTypes.length; i++)
+                          Text(
+                            expenditureTypes[i],
+                            style: TextStyle(fontSize: 18),
+                          ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 24),
+                  // Expenditure
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < expenditures.length; i++)
+                          Text(
+                            '\$${expenditures[i]}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 24),
+                  // Budget
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < budgets.length; i++)
+                          Text(
+                            '\$${budgets[i]}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
+            ),
           ],
         ),
       ),
@@ -108,31 +153,35 @@ class _BudgetScreenState extends State<BudgetScreen> {
   }
 }
 
-class BarChart extends StatelessWidget {
+class BarChartWidget extends StatelessWidget {
   final BarData barData;
 
-  BarChart({required this.barData});
+  BarChartWidget({required this.barData});
 
   @override
   Widget build(BuildContext context) {
-    double maxHeight = barData.expenditures.reduce((a, b) => a > b ? a : b);
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(barData.expenditures.length, (index) {
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        return Stack(
+          alignment: Alignment.topRight,
           children: [
-            Container(
-              height: barData.expenditures[index],
-              width: 20,
-              color: Colors.red,
-            ),
-            SizedBox(width: 8),
-            Container(
-              height: barData.budgets[index],
-              width: 20,
-              color: Colors.blue,
+            // Bar
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  height: barData.expenditures[index],
+                  width: 20,
+                  color: Colors.red,
+                ),
+                SizedBox(width: 8),
+                Container(
+                  height: barData.budgets[index],
+                  width: 20,
+                  color: Colors.blue,
+                ),
+              ],
             ),
           ],
         );
