@@ -77,7 +77,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
                 ),
               ],
               decoration: const InputDecoration(
-                labelText: 'Current Price',
+                labelText: 'Bought Price',
               ),
             ),
           ],
