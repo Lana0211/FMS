@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'total.dart';
 import 'transaction.dart';
+import 'budget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -69,6 +70,13 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.edit_document),
                 onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BudgetScreen()),
+                  ).then((value) {
+                    // This code runs when the TotalScreen page is popped.
+                    updateContent('Welcome to the Home Page!');
+                  });
                   // Handle edit_document action
                 },
                 color: _currentIndex == 1 ? Colors.blue : Colors.grey,
