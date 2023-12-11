@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TransactionScreen extends StatefulWidget {
   @override
@@ -9,8 +10,70 @@ class _TransactionScreenState extends State<TransactionScreen>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
   String selectedType = '';
-  List<String> expenditureTypes = ['Expense 1', 'Expense 2', 'Expense 3', 'Expense 4'];
-  List<String> incomeTypes = ['Income 1', 'Income 2', 'Income 3', 'Income 4'];
+  List<String> expenditureTypes = [
+    'Food',
+    'Transport',
+    'Shopping',
+    'Entertain',
+    'Healthcare',
+    'Rent',
+    'Education',
+    'Travel',
+    'Gifts',
+    'Insurance',
+    'Technology',
+    'Clothing',
+    'Hobbies',
+    'Others',
+  ];
+
+  List<IconData> expenditureIcons = [
+    Icons.fastfood,        // Food
+    Icons.directions_car,  // Transportation
+    Icons.shopping_cart,   // Shopping
+    Icons.movie,           // Entertainment
+    Icons.local_hospital,  // Healthcare
+    Icons.home,            // Rent
+    Icons.school,          // Education
+    Icons.airplanemode_active, // Travel
+    Icons.card_giftcard,   // Gifts
+    Icons.local_hospital,  // Insurance
+    Icons.devices,         // Technology
+    Icons.shopping_bag,    // Clothing
+    Icons.brush,           // Hobbies
+    Icons.category,        // Others
+  ];
+
+  List<String> incomeTypes = [
+    'Salary',
+    'Freelance',
+    'Investments',
+    'Gift',
+    'Rent',
+    'Bonus',
+    'Selling',
+    'Interest',
+    'Refund',
+    'Others',
+  ];
+
+  List<IconData> incomeIcons = [
+    Icons.attach_money,
+    Icons.work,
+    Icons.trending_up,
+    Icons.card_giftcard,
+    Icons.home,
+    Icons.card_giftcard,
+    Icons.local_grocery_store,
+    Icons.show_chart,
+    Icons.payment,
+    Icons.category,
+  ];
+
+  TextEditingController remarkController = TextEditingController();
+  TextEditingController dollarController = TextEditingController();
+  TextEditingController typeController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
 
   @override
   void initState() {
@@ -26,24 +89,24 @@ class _TransactionScreenState extends State<TransactionScreen>
         onWillPop: _onWillPop,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Transaction'),
             leading: IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             actions: [
               IconButton(
-                icon: Icon(Icons.check),
+                icon: const Icon(Icons.check),
                 onPressed: () {
-                  _showConfirmationDialog();
+                  // TODO: Add logic to save data and return to homepage
+                  _saveDataAndReturnToHomePage();
                 },
               ),
             ],
             bottom: TabBar(
               controller: _tabController,
-              tabs: [
+              tabs: const [
                 Tab(text: 'Expenditure'),
                 Tab(text: 'Income'),
               ],
@@ -55,31 +118,40 @@ class _TransactionScreenState extends State<TransactionScreen>
           body: TabBarView(
             controller: _tabController,
             children: [
-              // Expenditure Tab
-              _buildTypeSelection(expenditureTypes),
-              // Income Tab
-              _buildTypeSelection(incomeTypes),
+              SingleChildScrollView(
+                child: _buildTypeSelection(expenditureTypes, expenditureIcons),
+              ),
+              SingleChildScrollView(
+                child: _buildTypeSelection(incomeTypes, incomeIcons),
+              ),
             ],
           ),
+          bottomNavigationBar: _buildBottomNavigationBar(),
         ),
       ),
     );
   }
 
   Future<bool> _onWillPop() async {
-    return true;
+    // Handle the case when the user presses the back button
+    // You can add additional logic here if needed
+    return true; // Return true to allow pop
   }
 
-  Widget _buildTypeSelection(List<String> types) {
+  Widget _buildTypeSelection(List<String> types, List<IconData> icons) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Generate type buttons
           Wrap(
             spacing: 8.0,
             runSpacing: 8.0,
-            children: types.map((type) {
+            children: List.generate(types.length, (index) {
+              String type = types[index];
+              IconData icon = icons[index];
+
               return ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -87,7 +159,6 @@ class _TransactionScreenState extends State<TransactionScreen>
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: type == selectedType ? Colors.blue : null,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -96,75 +167,109 @@ class _TransactionScreenState extends State<TransactionScreen>
                   width: 80,
                   height: 80,
                   alignment: Alignment.center,
-                  child: Text(type),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        icon,
+                        size: 40,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(type),
+                    ],
+                  ),
                 ),
               );
-            }).toList(),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Selected Type: $selectedType',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            }),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _showConfirmationDialog() async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Container(
-            width: MediaQuery.of(context).size.width / 3,
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Confirmation',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
+  Widget _buildBottomNavigationBar() {
+    return Container(
+      height: MediaQuery.of(context).size.height / 2,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.white,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Selected Type
+              Text(
+                'Selected Type: $selectedType',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              // Display selected type at the bottom
+              const SizedBox(height: 8),
+              // Date
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _selectDate(context),
+                    child: const Text('Select Date'),
                   ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${dateController.text}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // Dollar
+              TextField(
+                controller: dollarController,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[ //只能輸入數字
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                decoration: const InputDecoration(
+                  labelText: 'Dollar',
+                  border: OutlineInputBorder(),
                 ),
-                SizedBox(height: 16.0),
-                Text('Are you sure you want to save?'),
-                SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cancel'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // TODO: Add logic to save data and return to homepage
-                        _saveDataAndReturnToHomePage();
-                      },
-                      child: Text('Confirm'),
-                    ),
-                  ],
+              ),
+              const SizedBox(height: 8),
+              // Remark
+              TextField(
+                controller: remarkController,
+                maxLength: 30, //字數限制
+                decoration: const InputDecoration(
+                  labelText: 'Remark',
+                  border: OutlineInputBorder(),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      // 格式化選擇的日期，只保留日期部分
+      final formattedDate = "${picked.year}-${picked.month}-${picked.day}";
+      setState(() {
+        dateController.text = formattedDate;
+      });
+    }
   }
 
   Future<void> _saveDataAndReturnToHomePage() async {
     // TODO: Add logic to save data to the database
     // Simulate a delay (replace with your actual saving logic)
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     // Navigate back to the home page
     Navigator.of(context).pop();
