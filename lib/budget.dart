@@ -13,15 +13,13 @@ class _BudgetScreenState extends State<BudgetScreen> {
   bool isExpenditure = true;
   DateTime selectedDate = DateTime.now();
   String yearMonth = DateFormat('yyyy-MM').format(DateTime.now());
-  // Placeholder data for illustration purposes
-  List<String> months = ['January', 'February', 'March', 'April', 'May'];
-  List<double> expenditures = [1000, 1200, 800, 900, 1100]; // Expenditure for each month
-  List<double> budgets = [1200, 1300, 1000, 1100, 1200]; // Budget for each month
+  List<String> expenditureTypes = ['Food', 'Transportation', 'Entertainment', 'Utilities', 'Others'];
+  List<double> expenditures = [500, 200, 100, 150, 300];
+  List<double> budgets = [600, 250, 180, 200, 350];
 
   @override
   void initState() {
     super.initState();
-    // fetchData();
   }
 
   Future<void> _selectMonthYear(BuildContext context) async {
@@ -33,10 +31,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
         setState(() {
           selectedDate = DateTime(date.year, date.month);
           yearMonth = DateFormat('yyyy-MM').format(selectedDate);
-          // typeAndAmountList = [];
-          // totalAmount = 0.0;
         });
-        // fetchData();
       }
     });
   }
@@ -51,69 +46,91 @@ class _BudgetScreenState extends State<BudgetScreen> {
           child: const Text('Budget'),
         ),
       ),
-      body: Column(
-        children: [
-          Center(
-            child: InkWell(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Icon(Icons.calendar_today, size: 24.0),
-                    const SizedBox(width: 8.0),
-                    Text(yearMonth),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(
+              child: InkWell(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Icon(Icons.calendar_today, size: 24.0),
+                      const SizedBox(width: 8.0),
+                      Text(yearMonth),
+                    ],
+                  ),
+                ),
+                onTap: () => _selectMonthYear(context),
+              ),
+            ),
+            // Add some padding to move the BarChart down
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 4,
+                child: Stack(
+                  children: [
+                    // BarChart
+                    BarChart(
+                      barData: BarData(
+                        expenditureTypes: expenditureTypes,
+                        expenditures: expenditures,
+                        budgets: budgets,
+                      ),
+                    ),
+                    // Horizontal Line
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 1,
+                        color: Colors.black,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              onTap: () => _selectMonthYear(context),
             ),
-          ),
-          // Add the following lines to display Expenditure Type, Budget, Expenditure
-          Text('Expenditure Type: YourExpenditureType'),
-          Text('Budget: \$YourBudgetAmount'),
-          Text('Expenditure: \$YourExpenditureAmount'),
-          // Bar chart for budget and expenditure comparison
-          Container(
-            height: MediaQuery.of(context).size.height / 2,
-            child: BarChart(
-              expenditures: expenditures,
-              budgets: budgets,
-            ),
-          ),
-        ],
+            // Display Expenditure Type, Budget, Expenditure
+            for (int i = 0; i < expenditureTypes.length; i++)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('${expenditureTypes[i]} - Expenditure: \$${expenditures[i]} | Budget: \$${budgets[i]}'),
+              ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class BarChart extends StatelessWidget {
-  final List<double> expenditures;
-  final List<double> budgets;
+  final BarData barData;
 
-  BarChart({required this.expenditures, required this.budgets});
+  BarChart({required this.barData});
 
   @override
   Widget build(BuildContext context) {
-    // Placeholder implementation for the bar chart
+    double maxHeight = barData.expenditures.reduce((a, b) => a > b ? a : b);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(expenditures.length, (index) {
-        return Column(
+      children: List.generate(barData.expenditures.length, (index) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
-              height: expenditures[index], // Expenditure bar height
+              height: barData.expenditures[index],
               width: 20,
               color: Colors.red,
             ),
+            SizedBox(width: 8),
             Container(
-              height: 10, // White line height
-              width: 20,
-              color: Colors.white,
-            ),
-            Container(
-              height: budgets[index], // Budget bar height
+              height: barData.budgets[index],
               width: 20,
               color: Colors.blue,
             ),
@@ -122,4 +139,12 @@ class BarChart extends StatelessWidget {
       }),
     );
   }
+}
+
+class BarData {
+  final List<String> expenditureTypes;
+  final List<double> expenditures;
+  final List<double> budgets;
+
+  BarData({required this.expenditureTypes, required this.expenditures, required this.budgets});
 }
