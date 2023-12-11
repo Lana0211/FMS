@@ -253,6 +253,20 @@ class _TotalScreenState extends State<TotalScreen> {
                   ),
                 ],
               ),
+              onTap: () {
+                // 获取被点击项的年月字符串
+                String yearMonth = DateFormat('yyyy-MM').format(DateTime.parse(item['date']));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TypeTotalPage(
+                      type: item['type'],
+                      yearMonth: yearMonth,
+                      allData: typeAndAmountList,
+                    ),
+                  ),
+                );
+              },
             ),
           );
         },
@@ -286,9 +300,24 @@ class TypeTotalPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: filteredData.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('${filteredData[index]['date']}'),
-            subtitle: Text('${filteredData[index]['type']} - \$${filteredData[index]['amount']}'),
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0), // Add some spacing around each item
+            decoration: BoxDecoration(
+              color: AppTheme.listBackgroundColor, // Set the background color
+              borderRadius: BorderRadius.circular(10.0), // Rounded corners
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2), // Shadow color with some transparency
+                  spreadRadius: 2,
+                  blurRadius: 4,
+                  offset: Offset(0, 3), // Changes position of shadow
+                ),
+              ],
+            ),
+            child: ListTile(
+              title: Text('${filteredData[index]['date']}'),
+              subtitle: Text('${filteredData[index]['type']} - \$${filteredData[index]['amount']}'),
+            ),
           );
         },
       ),
