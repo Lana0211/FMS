@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:math' as math;
 import 'budget_add.dart';
+import 'src/theme.dart';
 
 class BudgetScreen extends StatefulWidget {
   @override
@@ -151,10 +152,22 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 ),
               ),
             ),
-
+            SizedBox(height: 20),
             // Display Expenditure Type, Expenditure, Budget
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0), // Add some spacing around each item
+              decoration: BoxDecoration(
+                color: AppTheme.listBackgroundColor, // Set the background color
+                borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2), // Shadow color with some transparency
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: Offset(0, 3), // Changes position of shadow
+                  ),
+                ],
+              ),
               child: Row(
                 children: [
                   // Expenditure Type
@@ -162,9 +175,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
                     child: Column(
                       children: [
                         for (int i = 0; i < expenditureTypes.length; i++)
-                          Text(
-                            expenditureTypes[i],
-                            style: TextStyle(fontSize: 18),
+                          Column(
+                            children: [
+                              Text(
+                                expenditureTypes[i],
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              SizedBox(height: 10), // 在每行文本之間添加10點的間隔
+                            ],
                           ),
                       ],
                     ),
@@ -175,9 +193,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
                     child: Column(
                       children: [
                         for (int i = 0; i < expenditures.length; i++)
-                          Text(
-                            '\$${expenditures[i]}',
-                            style: TextStyle(fontSize: 18, color: Colors.red),
+                          Column(
+                            children: [
+                              Text(
+                                '\$${expenditures[i]}',
+                                style: TextStyle(fontSize: 18, color: Colors.red),
+                              ),
+                              SizedBox(height: 10), // 在每行文本之間添加10點的間隔
+                            ],
                           ),
                       ],
                     ),
@@ -188,9 +211,14 @@ class _BudgetScreenState extends State<BudgetScreen> {
                     child: Column(
                       children: [
                         for (int i = 0; i < budgets.length; i++)
-                          Text(
-                            '\$${budgets[i]}',
-                            style: TextStyle(fontSize: 18, color: Colors.blue),
+                          Column(
+                            children: [
+                              Text(
+                                '\$${budgets[i]}',
+                                style: TextStyle(fontSize: 18, color: Colors.blue),
+                              ),
+                              SizedBox(height: 10), // 在每行文本之間添加10點的間隔
+                            ],
                           ),
                       ],
                     ),
