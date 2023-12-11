@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:fl_chart/fl_chart.dart';
 
 class BudgetScreen extends StatefulWidget {
@@ -9,16 +11,49 @@ class BudgetScreen extends StatefulWidget {
 }
 
 class _BudgetScreenState extends State<BudgetScreen> {
-  bool isExpenditure = true;
   DateTime selectedDate = DateTime.now();
   String yearMonth = DateFormat('yyyy-MM').format(DateTime.now());
-  List<String> expenditureTypes = ['Food', 'Transportation', 'Entertainment', 'Utilities', 'Others'];
-  List<double> expenditures = [500, 200, 100, 150, 300];
-  List<double> budgets = [600, 250, 180, 200, 350];
+  List<Map<String, dynamic>> expenditureTypes = [];
+  List<Map<String, dynamic>> budgets = [];
+  List<String> expenditureTypeNames = [];
+  List<double> expenditures = [];
+
 
   @override
   void initState() {
     super.initState();
+    fetchTypesAndBudgets();
+  }
+
+  Future<void> fetchTypesAndBudgets() async {
+    final String year = selectedDate.year.toString();
+    final String month = selectedDate.month.toString().padLeft(2, '0');
+    final String typesUrl = 'http://10.0.2.2:5000/api/types?type=expenditure';
+    final String budgetsUrl = 'http://10.0.2.2:5000/api/budgets?year=$year&month=$month';
+
+    try {
+      final typesResponse = await http.get(Uri.parse(typesUrl));
+      final budgetsResponse = await http.get(Uri.parse(budgetsUrl));
+
+      if (typesResponse.statusCode == 200 && budgetsResponse.statusCode == 200) {
+        final typesData = json.decode(typesResponse.body);
+        final budgetsData = json.decode(budgetsResponse.body);
+
+        setState(() {
+          expenditureTypes = List<Map<String, dynamic>>.from(typesData);
+          budgets = List<Map<String, dynamic>>.from(budgetsData);
+
+          expenditureTypeNames = expenditureTypes
+              .map((typeMap) => typeMap['name'] as String)
+              .toList();
+
+        });
+      } else {
+        // Handle errors
+      }
+    } catch (e) {
+      // Handle exceptions
+    }
   }
 
   Future<void> _selectMonthYear(BuildContext context) async {
@@ -75,7 +110,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                     // BarChart
                     BarChartWidget(
                       barData: BarData(
-                        expenditureTypes: expenditureTypes,
+                        expenditureTypes: expenditureTypeNames,
                         expenditures: expenditures,
                         budgets: budgets,
                       ),
@@ -111,7 +146,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                       children: [
                         for (int i = 0; i < expenditureTypes.length; i++)
                           Text(
-                            expenditureTypes[i],
+                            expenditureTypeNames[i],
                             style: TextStyle(fontSize: 18),
                           ),
                       ],

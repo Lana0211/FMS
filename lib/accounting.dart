@@ -56,10 +56,20 @@ class _AccountingScreenState extends State<AccountingScreen> {
           }
         });
       } else {
-        print('Failed to fetch data');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to fetch data'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
-      print('Error fetching data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching data: $e'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 

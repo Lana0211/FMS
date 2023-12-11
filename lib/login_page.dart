@@ -239,7 +239,12 @@ class _LoginScreenState extends State<LoginScreen> {
     final String phone = _phoneController.text;
 
     if (password != checkPassword) {
-      print('Password do not match.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password do not match.'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
       return;
     }
 
@@ -256,15 +261,22 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (response.statusCode == 201) {
-      print('Registration successful');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registration successful'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } else {
-      print('Registration failed: ${response.body}');
+      final Map<String, dynamic> data = json.decode(response.body);
+      final String message = data['message'];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registration failed: $message'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 }
-//
-// void main() {
-//   runApp(MaterialApp(
-//     home: LoginScreen(),
-//   ));
-// }
+

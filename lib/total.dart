@@ -62,10 +62,20 @@ class _TotalScreenState extends State<TotalScreen> {
           }
         }
       } else {
-        print('Failed to load data');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load data'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
-      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
