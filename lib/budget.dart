@@ -4,6 +4,7 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:math' as math;
+import 'budget_add.dart';
 
 class BudgetScreen extends StatefulWidget {
   @override
@@ -258,16 +259,16 @@ class BarData {
 }
 
 void _navigateToBudgetAdd(BuildContext context) {
-  // Navigator.push(
-  //   context,
-  //   MaterialPageRoute(builder: (context) => BudgetAddScreen()),
-  // ).then((value) {
-  //   // Handle the result when the BudgetAddScreen page is popped.
-  //   if (value != null) {
-  //     // Assuming value is the newly added budget data.
-  //     // You can handle the data as needed.
-  //     // For example, update the UI with the new data.
-  //     // Update the budgets list and any other necessary data.
-  //   }
-  // });
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => BudgetAddScreen()),
+  ).then((value) {
+    // Handle the result when the BudgetAddScreen page is popped.
+    if (value != null) {
+      // Assuming value is the newly added budget data.
+      // You can handle the data as needed.
+      // For example, update the UI with the new data.
+      // Update the budgets list and any other necessary data.
+    }
+  });
 }
