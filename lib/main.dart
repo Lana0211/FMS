@@ -77,8 +77,8 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     TotalScreen(),
     BudgetScreen(),
+    StockScreen(),
     AccountingScreen(),
-    TotalScreen(),
     // The TransactionScreen is not part of the bottom navigation pages
   ];
 

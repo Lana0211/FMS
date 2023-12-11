@@ -31,8 +31,8 @@ class _TotalScreenState extends State<TotalScreen> {
     final String year = selectedDate.year.toString();
     final String month = selectedDate.month.toString().padLeft(2, '0'); // 確保月份是兩位數
     final String endpoint = isExpenditure
-        ? 'http://10.0.2.2:5000/api/expenditures?year=$year&month=$month'
-        : 'http://10.0.2.2:5000/api/incomes?year=$year&month=$month';
+        ? 'https://db-accounting.azurewebsites.net/api/expenditures?year=$year&month=$month'
+        : 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month';
 
     try {
       final response = await http.get(Uri.parse(endpoint));
@@ -70,12 +70,12 @@ class _TotalScreenState extends State<TotalScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Error: $e'),
+      //     duration: const Duration(seconds: 2),
+      //   ),
+      // );
     }
   }
 
@@ -148,7 +148,8 @@ class _TotalScreenState extends State<TotalScreen> {
           _buildPieChart(),
           _buildTotalAmount(),
           const Divider(color: Colors.white, thickness: 1.0),
-          _buildTypeAndAmountList(context),
+          if(typeAndAmountList.isNotEmpty)
+            _buildTypeAndAmountList(context),
         ],
       ),
     );

@@ -25,8 +25,8 @@ class _AccountingScreenState extends State<AccountingScreen> {
     var year = selectedDate.year.toString();
     var month = selectedDate.month.toString().padLeft(2, '0');
 
-    var expenditureEndpoint = 'http://10.0.2.2:5000/api/expenditures?year=$year&month=$month';
-    var incomeEndpoint = 'http://10.0.2.2:5000/api/incomes?year=$year&month=$month';
+    var expenditureEndpoint = 'https://db-accounting.azurewebsites.net/api/expenditures?year=$year&month=$month';
+    var incomeEndpoint = 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month';
 
     try {
       var expenditureResponse = await http.get(Uri.parse(expenditureEndpoint));

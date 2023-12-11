@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final String password = _loginPasswordController.text;
 
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:5000/api/accounts/login'),
+      Uri.parse('https://db-accounting.azurewebsites.net/api/accounts/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'account': account,
@@ -249,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:5000/api/accounts/register'),
+      Uri.parse('https://db-accounting.azurewebsites.net/api/accounts/register'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'account': account,

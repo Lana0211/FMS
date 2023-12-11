@@ -31,8 +31,8 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
     final String year = selectedDate.year.toString();
     final String month = selectedDate.month.toString().padLeft(2, '0');
-    const String typesUrl = 'http://10.0.2.2:5000/api/types?type=expenditure';
-    final String budgetsUrl = 'http://10.0.2.2:5000/api/budgets?year=$year&month=$month';
+    const String typesUrl = 'https://db-accounting.azurewebsites.net/api/types?type=expenditure';
+    final String budgetsUrl = 'https://db-accounting.azurewebsites.net/api/budgets?year=$year&month=$month';
 
     try {
       // Fetching budgets
