@@ -25,6 +25,9 @@ class _TotalScreenState extends State<TotalScreen> {
   }
 
   Future<void> fetchData() async {
+    typeAndAmountList = [];
+    totalAmount = 0.0;
+
     final String year = selectedDate.year.toString();
     final String month = selectedDate.month.toString().padLeft(2, '0'); // 確保月份是兩位數
     final String endpoint = isExpenditure
@@ -40,12 +43,13 @@ class _TotalScreenState extends State<TotalScreen> {
           if (data['expenditures'] != null) {
             setState(() {
               typeAndAmountList = List<Map<String, dynamic>>.from(data['expenditures']);
+
+              for (var item in typeAndAmountList) {
+                String amountString = item['amount'];
+                item['amount'] = '-${amountString}';
+              }
+
               totalAmount = double.parse(data['total_amount']);
-            });
-          } else {
-            setState(() {
-              typeAndAmountList = [];
-              totalAmount = 0.0;
             });
           }
         } else {
@@ -54,11 +58,6 @@ class _TotalScreenState extends State<TotalScreen> {
             setState(() {
               typeAndAmountList = List<Map<String, dynamic>>.from(data['incomes']);
               totalAmount = double.parse(data['total_amount']);
-            });
-          } else {
-            setState(() {
-              typeAndAmountList = [];
-              totalAmount = 0.0;
             });
           }
         }
@@ -78,10 +77,8 @@ class _TotalScreenState extends State<TotalScreen> {
       if (date != null && date != selectedDate) {
         setState(() {
           selectedDate = DateTime(date.year, date.month);
-          typeAndAmountList = []; // 清空列表
-          totalAmount = 0.0; // 重置總價
+          fetchData(); // 獲得新數據
         });
-        fetchData(); // 獲得新數據
       }
     });
   }
@@ -136,16 +133,10 @@ class _TotalScreenState extends State<TotalScreen> {
             onTap: () => _selectMonthYear(context), // 綁定 _selectDate
           ),
 
-          if (typeAndAmountList.isNotEmpty) ...[
-            _buildPieChart(),
-            _buildTotalAmount(),
-            const Divider(color: Colors.white, thickness: 1.0),
-            _buildTypeAndAmountList(context),
-          ] else ...[
-            _buildEmptyPieChart(),
-            _buildTotalAmount(),
-            const Divider(color: Colors.white, thickness: 1.0),
-          ],
+          _buildPieChart(),
+          _buildTotalAmount(),
+          const Divider(color: Colors.white, thickness: 1.0),
+          _buildTypeAndAmountList(context),
         ],
       ),
     );
@@ -188,14 +179,29 @@ class _TotalScreenState extends State<TotalScreen> {
       padding: const EdgeInsets.all(5.0),
       // width: 100.0,
       height: 150.0,
-      child: PieChart(
-        PieChartData(
-          sections: sections,
-          centerSpaceRadius: 30.0,
-          borderData: FlBorderData(show: false),
-          sectionsSpace: 0,
+      child: typeAndAmountList.isNotEmpty
+        ? PieChart(
+          PieChartData(
+            sections: sections,
+            centerSpaceRadius: 30.0,
+            borderData: FlBorderData(show: false),
+            sectionsSpace: 0,
+          ),
+        )
+        : PieChart(
+          PieChartData(
+            sections: [
+              PieChartSectionData(
+                color: Colors.grey,
+                value: 100, // 一个满圆
+                title: '', // 没有标题
+              ),
+            ],
+            centerSpaceRadius: 30.0,
+            borderData: FlBorderData(show: false),
+            sectionsSpace: 0,
+          ),
         ),
-      ),
     );
   }
 
