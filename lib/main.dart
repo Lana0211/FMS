@@ -1,5 +1,6 @@
 // main.dart
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'src/theme.dart';
 import 'home.dart';
 import 'total.dart';
@@ -7,19 +8,63 @@ import 'budget.dart';
 import 'stock.dart';
 import 'accounting.dart';
 import 'transaction.dart';
+import 'login_check.dart';
+import 'login_page.dart';
 
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+Future<bool> initApp() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+
+  return isLoggedIn;
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Future<bool> _isLoggedIn;
+
+  @override
+  void initState() {
+    super.initState();
+    _isLoggedIn = initApp();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: AppTheme.lightTheme, // Use the light theme
-      home: MainScreen(),
+    return FutureBuilder<bool>(
+      future: _isLoggedIn,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const MaterialApp(
+            home: Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return MaterialApp(
+            home: Scaffold(
+              body: Center(child: Text("Error: ${snapshot.error}")),
+            ),
+          );
+        }
+
+        final isLoggedIn = snapshot.data ?? false;
+
+        return MaterialApp(
+          title: 'Flutter Demo',
+          theme: AppTheme.lightTheme,
+          home: isLoggedIn ? MainScreen() : LoginScreen(),
+        );
+      },
     );
   }
 }

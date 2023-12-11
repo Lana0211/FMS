@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
 
   final TextEditingController _loginAccountController = TextEditingController();
   final TextEditingController _loginPasswordController = TextEditingController();
@@ -199,10 +201,31 @@ class _LoginPageState extends State<LoginPage> {
       }),
     );
 
+    final Map<String, dynamic> data = json.decode(response.body);
     if (response.statusCode == 401) {
-      print('Login failed: ${response.body}');
+      final String message = data['message'];
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login failed: $message'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } else if (response.statusCode == 200){
-      print('Login successful');
+      final String userId = data['user_id'].toString();
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_id', userId);
+      await prefs.setBool('is_logged_in', true);
+
+      // 導航到主頁面
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login successful'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -239,9 +262,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 }
-
-void main() {
-  runApp(MaterialApp(
-    home: LoginPage(),
-  ));
-}
+//
+// void main() {
+//   runApp(MaterialApp(
+//     home: LoginScreen(),
+//   ));
+// }
