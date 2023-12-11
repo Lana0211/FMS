@@ -101,7 +101,6 @@ class _AccountingScreenState extends State<AccountingScreen> {
             ),
             onTap: () => _selectMonthYear(context), // 綁定 _selectDate
           ),
-
         ],
       ),
       body: records.isEmpty
