@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:fl_chart/fl_chart.dart';
+import 'dart:math' as math;
 
 class BudgetScreen extends StatefulWidget {
   @override
@@ -13,11 +13,9 @@ class BudgetScreen extends StatefulWidget {
 class _BudgetScreenState extends State<BudgetScreen> {
   DateTime selectedDate = DateTime.now();
   String yearMonth = DateFormat('yyyy-MM').format(DateTime.now());
-  List<Map<String, dynamic>> expenditureTypes = [];
-  List<Map<String, dynamic>> budgets = [];
-  List<String> expenditureTypeNames = [];
+  List<String> expenditureTypes = [];
   List<double> expenditures = [];
-
+  List<double> budgets = [];
 
   @override
   void initState() {
@@ -26,33 +24,48 @@ class _BudgetScreenState extends State<BudgetScreen> {
   }
 
   Future<void> fetchTypesAndBudgets() async {
+    expenditureTypes = [];
+    expenditures = [];
+    budgets = [];
+
     final String year = selectedDate.year.toString();
     final String month = selectedDate.month.toString().padLeft(2, '0');
-    final String typesUrl = 'http://10.0.2.2:5000/api/types?type=expenditure';
+    const String typesUrl = 'http://10.0.2.2:5000/api/types?type=expenditure';
     final String budgetsUrl = 'http://10.0.2.2:5000/api/budgets?year=$year&month=$month';
 
     try {
-      final typesResponse = await http.get(Uri.parse(typesUrl));
-      final budgetsResponse = await http.get(Uri.parse(budgetsUrl));
+      // Fetching budgets
+      final responseBudgets = await http.get(Uri.parse(budgetsUrl));
+      if (responseBudgets.statusCode == 200) {
+        final List<dynamic> budgetsData = json.decode(responseBudgets.body);
+        List<int> typeIds = budgetsData.map((budget) => budget['expenditure_type'] as int).toSet().toList();
 
-      if (typesResponse.statusCode == 200 && budgetsResponse.statusCode == 200) {
-        final typesData = json.decode(typesResponse.body);
-        final budgetsData = json.decode(budgetsResponse.body);
+        for (int typeId in typeIds) {
+          final responseTypes = await http.get(Uri.parse('$typesUrl&type_id=$typeId'));
+          if (responseTypes.statusCode == 200) {
+            final dynamic typeData = json.decode(responseTypes.body);
+            expenditureTypes.add(typeData['name']);
+          } else {
+            throw Exception('Failed to load type for id $typeId');
+          }
+        }
 
         setState(() {
-          expenditureTypes = List<Map<String, dynamic>>.from(typesData);
-          budgets = List<Map<String, dynamic>>.from(budgetsData);
-
-          expenditureTypeNames = expenditureTypes
-              .map((typeMap) => typeMap['name'] as String)
-              .toList();
-
+          expenditures = budgetsData.map((budget) => double.parse(budget['remaining_budget'].toString())).toList();
+          budgets = budgetsData.map((budget) => double.parse(budget['amount'].toString())).toList();
         });
+
+
       } else {
-        // Handle errors
+        throw Exception('Failed to load budgets');
       }
     } catch (e) {
-      // Handle exceptions
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching budget data: $e'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -64,7 +77,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
       if (date != null && date != selectedDate) {
         setState(() {
           selectedDate = DateTime(date.year, date.month);
-          yearMonth = DateFormat('yyyy-MM').format(selectedDate);
+          fetchTypesAndBudgets(); // 獲得新數據
         });
       }
     });
@@ -76,28 +89,36 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: const Text('Budget'),
+        title: const Center(
+          child: Text('Budget'),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              _navigateToBudgetAdd(context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Center(
-              child: InkWell(
+              child: InkWell( // 日曆彈窗
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(5),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min, // 限制 Row 的大小僅包裹其內容
+                    mainAxisAlignment: MainAxisAlignment.center, // 水平居中
                     children: <Widget>[
-                      const Icon(Icons.calendar_today, size: 24.0),
-                      const SizedBox(width: 8.0),
-                      Text(yearMonth),
+                      const Icon(Icons.calendar_today, size: 15.0), // 日曆圖標
+                      const SizedBox(width: 8.0), // 圖標和文本之間的間隙
+                      Text(formattedDate), // 顯示格式化的日期
                     ],
                   ),
                 ),
-                onTap: () => _selectMonthYear(context),
+                onTap: () => _selectMonthYear(context), // 綁定 _selectDate
               ),
             ),
             // Add some padding to move the BarChart down
@@ -108,13 +129,13 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 child: Stack(
                   children: [
                     // BarChart
-                    BarChartWidget(
+                    budgets.isNotEmpty ? BarChartWidget(
                       barData: BarData(
-                        expenditureTypes: expenditureTypeNames,
+                        expenditureTypes: expenditureTypes,
                         expenditures: expenditures,
                         budgets: budgets,
                       ),
-                    ),
+                    ) : Container(),
                     // Horizontal Line
                     Positioned(
                       bottom: 0,
@@ -129,12 +150,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 ),
               ),
             ),
-            // White Separator Line
-            Container(
-              height: 1,
-              color: Colors.white,
-              margin: const EdgeInsets.symmetric(vertical: 8),
-            ),
+
             // Display Expenditure Type, Expenditure, Budget
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -146,7 +162,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                       children: [
                         for (int i = 0; i < expenditureTypes.length; i++)
                           Text(
-                            expenditureTypeNames[i],
+                            expenditureTypes[i],
                             style: TextStyle(fontSize: 18),
                           ),
                       ],
@@ -160,7 +176,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                         for (int i = 0; i < expenditures.length; i++)
                           Text(
                             '\$${expenditures[i]}',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.red),
                           ),
                       ],
                     ),
@@ -173,7 +189,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                         for (int i = 0; i < budgets.length; i++)
                           Text(
                             '\$${budgets[i]}',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.blue),
                           ),
                       ],
                     ),
@@ -195,32 +211,40 @@ class BarChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(barData.expenditures.length, (index) {
-        return Stack(
-          alignment: Alignment.topRight,
-          children: [
-            // Bar
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Container(
-                  height: barData.expenditures[index],
-                  width: 20,
-                  color: Colors.red,
-                ),
-                SizedBox(width: 8),
-                Container(
-                  height: barData.budgets[index],
-                  width: 20,
-                  color: Colors.blue,
-                ),
-              ],
-            ),
-          ],
-        );
-      }),
+    // 找出最大的數字
+    final maxAmount = (barData.expenditures + barData.budgets).reduce(math.max);
+    final double chartHeight = 200.0;
+
+    return Container(
+        height: chartHeight,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: List.generate(barData.expenditures.length, (index) {
+          // 計算每個的百分比
+          final expenditureHeight = (math.max(0, barData.expenditures[index]) / maxAmount) * chartHeight;
+          final budgetHeight = (math.max(0, barData.budgets[index]) / maxAmount) * chartHeight;
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              barData.expenditures[index] > 0 ? Container(
+                height: expenditureHeight,
+                // height: barData.expenditures[index],
+                width: 20,
+                color: Colors.red,
+              ) : Container(),
+              SizedBox(width: 8),
+              Container(
+                height: budgetHeight,
+                // height: barData.budgets[index],
+                width: 20,
+                color: Colors.blue,
+              ),
+            ],
+          );
+        }),
+      ),
     );
   }
 }
@@ -231,4 +255,19 @@ class BarData {
   final List<double> budgets;
 
   BarData({required this.expenditureTypes, required this.expenditures, required this.budgets});
+}
+
+void _navigateToBudgetAdd(BuildContext context) {
+  // Navigator.push(
+  //   context,
+  //   MaterialPageRoute(builder: (context) => BudgetAddScreen()),
+  // ).then((value) {
+  //   // Handle the result when the BudgetAddScreen page is popped.
+  //   if (value != null) {
+  //     // Assuming value is the newly added budget data.
+  //     // You can handle the data as needed.
+  //     // For example, update the UI with the new data.
+  //     // Update the budgets list and any other necessary data.
+  //   }
+  // });
 }

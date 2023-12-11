@@ -144,21 +144,6 @@ class _TotalScreenState extends State<TotalScreen> {
               ),
             ],
           ),
-          // InkWell( // 日曆彈窗
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(5),
-          //     child: Row(
-          //       mainAxisSize: MainAxisSize.min, // 限制 Row 的大小僅包裹其內容
-          //       mainAxisAlignment: MainAxisAlignment.center, // 水平居中
-          //       children: <Widget>[
-          //         const Icon(Icons.calendar_today, size: 15.0), // 日曆圖標
-          //         const SizedBox(width: 8.0), // 圖標和文本之間的間隙
-          //         Text(formattedDate), // 顯示格式化的日期
-          //       ],
-          //     ),
-          //   ),
-          //   onTap: () => _selectMonthYear(context), // 綁定 _selectDate
-          // ),
 
           _buildPieChart(),
           _buildTotalAmount(),
