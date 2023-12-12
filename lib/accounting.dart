@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'src/theme.dart';
 import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'transaction_delete.dart';
 
 class AccountingScreen extends StatefulWidget {
   @override
@@ -162,10 +163,44 @@ class _AccountingScreenState extends State<AccountingScreen> {
                     ),
                   ],
                 ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TransactionDeleteScreen(
+                        type: record['type'],
+                        date: record['date'],
+                        dollar: record['amount'],
+                      ),
+                    ),
+                  );
+                },
               ),
             );
           },
         )
     );
+  }
+  void _navigateToTransactionDeleteScreen() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TransactionDeleteScreen(
+          type: 'initialType', // 初始的 type
+          date: 'initialDate', // 初始的 date
+          dollar: 'initialDollar', // 初始的 dollar
+        ),
+      ),
+    );
+
+    // 如果結果不為 null，表示用戶點擊了保存按鈕，並且有新數據返回
+    if (result != null) {
+      // 在這裡處理返回的結果，result 就是包含更新數據的 Map
+      String updatedType = result['type'];
+      String updatedDate = result['date'];
+      String updatedDollar = result['dollar'];
+
+      // TODO: 根據需要進行相應的處理，例如更新 UI 或其他操作。
+    }
   }
 }
