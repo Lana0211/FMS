@@ -299,19 +299,4 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
     }
   }
 
-
-// Future<void> _saveDataAndReturnToHomePage() async {
-  //   // TODO: Add logic to save data to the database
-  //   // Simulate a delay (replace with your actual saving logic)
-  //   await Future.delayed(const Duration(seconds: 2));
-  //
-  //   // Navigate back to the home page
-  //   Navigator.of(context).pop();
-  // }
-  //
-  // @override
-  // void dispose() {
-  //   _tabController?.dispose();
-  //   super.dispose();
-  // }
 }
