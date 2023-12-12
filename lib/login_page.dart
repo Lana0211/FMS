@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Welcome'),
+          automaticallyImplyLeading: false,
           centerTitle: true,
           backgroundColor: const Color(0xFFC4E1FF),
           bottom: const TabBar(

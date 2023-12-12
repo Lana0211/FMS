@@ -4,6 +4,7 @@ import 'transaction.dart';
 import 'budget.dart';
 import 'stock.dart';
 import 'accounting.dart';
+import 'profile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -89,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => StockScreen()),
+                    MaterialPageRoute(builder: (context) => ProfileScreen()),
                   ).then((value) {
                     // This code runs when the TotalScreen page is popped.
                     updateContent('Welcome to the Home Page!');
