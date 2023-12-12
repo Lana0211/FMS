@@ -361,18 +361,4 @@ class _TransactionScreenState extends State<TransactionScreen>
     super.dispose();
   }
 
-
-// Future<void> _saveDataAndReturnToHomePage() async {
-  //   // Simulate a delay (replace with your actual saving logic)
-  //   await Future.delayed(const Duration(seconds: 2));
-  //
-  //   // Navigate back to the home page
-  //   Navigator.of(context).pop();
-  // }
-  //
-  // @override
-  // void dispose() {
-  //   _tabController?.dispose();
-  //   super.dispose();
-  // }
 }
