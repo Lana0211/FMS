@@ -229,16 +229,6 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
                 ),
               ),
               const SizedBox(height: 8),
-              IconButton(
-                icon: Icon(
-                  Icons.delete,
-                  color: Colors.red, // 更改為紅色
-                ),
-                onPressed: () {
-                  // TODO: Add logic to delete data
-                  _deleteDataAndReturnToHomePage();
-                },
-              )
             ],
           ),
         ),
