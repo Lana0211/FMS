@@ -72,7 +72,6 @@ class _TransactionScreenState extends State<TransactionScreen>
     Icons.category,
   ];
 
-  TextEditingController remarkController = TextEditingController();
   TextEditingController dollarController = TextEditingController();
   TextEditingController typeController = TextEditingController();
   TextEditingController dateController = TextEditingController();
@@ -197,7 +196,7 @@ class _TransactionScreenState extends State<TransactionScreen>
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.4,
+      height: MediaQuery.of(context).size.height * 0.3,
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
       child: SingleChildScrollView(
@@ -243,21 +242,6 @@ class _TransactionScreenState extends State<TransactionScreen>
                   ),
                 ),
               ),
-
-              const SizedBox(height: 8),
-              // Remark
-              Container(
-                height: MediaQuery.of(context).size.height / 9,
-                child: TextField(
-                  controller: remarkController,
-                  maxLength: 30, //字數限制
-                  decoration: const InputDecoration(
-                    labelText: 'Remark',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-
               const SizedBox(height: 8),
             ],
           ),
@@ -354,7 +338,6 @@ class _TransactionScreenState extends State<TransactionScreen>
   @override
   void dispose() {
     _tabController?.dispose();
-    remarkController.dispose();
     dollarController.dispose();
     typeController.dispose();
     dateController.dispose();
