@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,66 +13,65 @@ class _TransactionScreenState extends State<TransactionScreen>
   TabController? _tabController;
   String selectedType = '';
   List<String> expenditureTypes = [
-    'Food',
-    'Transport',
-    'Shopping',
-    'Entertain',
-    'Healthcare',
-    'Rent',
-    'Education',
-    'Travel',
-    'Gifts',
-    'Insurance',
-    'Technology',
-    'Clothing',
-    'Hobbies',
-    'Others',
+    '餐飲',
+    '交通',
+    '娛樂',
+    '購物',
+    '醫療',
+    '住房',
+    '學習',
+    '旅行',
+    '禮品',
+    '水電',
+    '通訊',
+    '美容',
+    '日用',
+    '其他',
   ];
 
   List<IconData> expenditureIcons = [
-    Icons.fastfood,        // Food
-    Icons.directions_car,  // Transportation
-    Icons.shopping_cart,   // Shopping
-    Icons.movie,           // Entertainment
-    Icons.local_hospital,  // Healthcare
-    Icons.home,            // Rent
-    Icons.school,          // Education
-    Icons.airplanemode_active, // Travel
-    Icons.card_giftcard,   // Gifts
-    Icons.local_hospital,  // Insurance
-    Icons.devices,         // Technology
-    Icons.shopping_bag,    // Clothing
-    Icons.brush,           // Hobbies
-    Icons.category,        // Others
+    Icons.fastfood,
+    Icons.directions_car,
+    Icons.movie,
+    Icons.shopping_cart,
+    Icons.local_hospital,
+    Icons.home,
+    Icons.school,
+    Icons.airplanemode_active,
+    Icons.card_giftcard,
+    Icons.opacity,
+    Icons.phone,
+    Icons.face,
+    Icons.shopping_basket,
+    Icons.category,
   ];
 
   List<String> incomeTypes = [
-    'Salary',
-    'Freelance',
-    'Investments',
-    'Gift',
-    'Rent',
-    'Bonus',
-    'Selling',
-    'Interest',
-    'Refund',
-    'Others',
+    '薪水',
+    '投資',
+    '禮金',
+    '租金',
+    '兼職',
+    '獎金',
+    '轉賣',
+    '利息',
+    '退款',
+    '其他',
   ];
 
   List<IconData> incomeIcons = [
     Icons.attach_money,
-    Icons.work,
     Icons.trending_up,
     Icons.card_giftcard,
     Icons.home,
-    Icons.card_giftcard,
+    Icons.work,
     Icons.local_grocery_store,
     Icons.show_chart,
     Icons.payment,
+    Icons.refresh,
     Icons.category,
   ];
 
-  TextEditingController remarkController = TextEditingController();
   TextEditingController dollarController = TextEditingController();
   TextEditingController typeController = TextEditingController();
   TextEditingController dateController = TextEditingController();
@@ -139,6 +140,9 @@ class _TransactionScreenState extends State<TransactionScreen>
   }
 
   Widget _buildTypeSelection(List<String> types, List<IconData> icons) {
+    double iconWidth = MediaQuery.of(context).size.width / 6; // 將圖標的寬度設置為屏幕寬度的三分之一
+    double iconFontSize = iconWidth * 0.3;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -164,18 +168,21 @@ class _TransactionScreenState extends State<TransactionScreen>
                   ),
                 ),
                 child: Container(
-                  width: 80,
-                  height: 80,
+                  width: iconWidth, // 使用計算的圖標寬度
+                  height: iconWidth, // 使用計算的圖標寬度
                   alignment: Alignment.center,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         icon,
-                        size: 40,
+                        size: iconFontSize,
                       ),
                       const SizedBox(height: 8),
-                      Text(type),
+                      Text(
+                        type,
+                        style: TextStyle(fontSize: iconFontSize), // 使用計算的字體大小
+                      ),
                     ],
                   ),
                 ),
@@ -189,7 +196,7 @@ class _TransactionScreenState extends State<TransactionScreen>
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      height: MediaQuery.of(context).size.height / 2,
+      height: MediaQuery.of(context).size.height * 0.4,
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
       child: SingleChildScrollView(
@@ -219,27 +226,20 @@ class _TransactionScreenState extends State<TransactionScreen>
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
               // Dollar
-              TextField(
-                controller: dollarController,
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[ //只能輸入數字
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                decoration: const InputDecoration(
-                  labelText: 'Dollar',
-                  border: OutlineInputBorder(),
-                ),
-              ),
               const SizedBox(height: 8),
-              // Remark
-              TextField(
-                controller: remarkController,
-                maxLength: 30, //字數限制
-                decoration: const InputDecoration(
-                  labelText: 'Remark',
-                  border: OutlineInputBorder(),
+              Container(
+                height: MediaQuery.of(context).size.height / 12,
+                child: TextField(
+                  controller: dollarController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[ //只能輸入數字
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  decoration: const InputDecoration(
+                    labelText: 'Dollar',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -267,17 +267,95 @@ class _TransactionScreenState extends State<TransactionScreen>
   }
 
   Future<void> _saveDataAndReturnToHomePage() async {
-    // TODO: Add logic to save data to the database
-    // Simulate a delay (replace with your actual saving logic)
-    await Future.delayed(const Duration(seconds: 2));
+    if (selectedType.isEmpty || dollarController.text.isEmpty || dateController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
 
-    // Navigate back to the home page
-    Navigator.of(context).pop();
+    // Assuming the user ID is available in the session or from user input
+    int userId = 1; // Replace with actual user ID
+
+    // Get the type ID from the API
+    var typeId;
+    var typeName = selectedType;
+    var apiUrl = 'http://db-accounting.azurewebsites.net/api/types'; // Replace with actual API URL
+    var typeCategory = _tabController?.index == 0 ? 'expenditure' : 'income'; // based on the selected tab
+
+    try {
+      var typeResponse = await http.get(
+        Uri.parse('$apiUrl?type_name=$typeName&type=$typeCategory'),
+      );
+
+      if (typeResponse.statusCode == 200) {
+        var typeData = json.decode(typeResponse.body);
+        typeId = typeData['type_id'];
+      } else {
+        throw Exception('Failed to load type ID');
+      }
+
+      // Construct the data payload
+      var data = _tabController?.index == 0 ? {
+        'user_id': userId,
+        'amount': double.parse(dollarController.text),
+        'expenditure_type': typeId,
+        'expenditure_date': dateController.text, // Adjust the key according to your API's expected parameters
+      }: {
+        'user_id': userId,
+        'amount': double.parse(dollarController.text),
+        'income_type': typeId,
+        'income_date': dateController.text,
+        // Adjust the key according to your API's expected parameters
+      };
+
+      print('Data to be sent: $data');
+
+      var saveUrl = _tabController?.index == 0
+          ? 'https://db-accounting.azurewebsites.net/api/expenditures' // Replace with actual Expenditure API URL
+          : 'https://db-accounting.azurewebsites.net/api/incomes'; // Replace with actual Income API URL
+
+      // Make the POST request to save the data
+      var saveResponse = await http.post(
+        Uri.parse(saveUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      if (saveResponse.statusCode == 201) {
+        // Successfully saved data
+        Navigator.of(context).pop(); // Go back to the home page
+      } else {
+        throw Exception('Failed to save data');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
   @override
   void dispose() {
     _tabController?.dispose();
+    dollarController.dispose();
+    typeController.dispose();
+    dateController.dispose();
     super.dispose();
   }
+
+
+// Future<void> _saveDataAndReturnToHomePage() async {
+//   // Simulate a delay (replace with your actual saving logic)
+//   await Future.delayed(const Duration(seconds: 2));
+//
+//   // Navigate back to the home page
+//   Navigator.of(context).pop();
+// }
+//
+// @override
+// void dispose() {
+//   _tabController?.dispose();
+//   super.dispose();
+// }
 }
