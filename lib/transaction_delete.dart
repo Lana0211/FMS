@@ -16,62 +16,62 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
   TabController? _tabController;
   String selectedType = '';
   List<String> expenditureTypes = [
-    'Food',
-    'Transport',
-    'Shopping',
-    'Entertain',
-    'Healthcare',
-    'Rent',
-    'Education',
-    'Travel',
-    'Gifts',
-    'Insurance',
-    'Technology',
-    'Clothing',
-    'Hobbies',
-    'Others',
+    '餐飲',
+    '交通',
+    '娛樂',
+    '購物',
+    '醫療',
+    '住房',
+    '學習',
+    '旅行',
+    '禮品',
+    '水電',
+    '通訊',
+    '美容',
+    '日用',
+    '其他',
   ];
 
   List<IconData> expenditureIcons = [
-    Icons.fastfood,        // Food
-    Icons.directions_car,  // Transportation
-    Icons.shopping_cart,   // Shopping
-    Icons.movie,           // Entertainment
-    Icons.local_hospital,  // Healthcare
-    Icons.home,            // Rent
-    Icons.school,          // Education
-    Icons.airplanemode_active, // Travel
-    Icons.card_giftcard,   // Gifts
-    Icons.local_hospital,  // Insurance
-    Icons.devices,         // Technology
-    Icons.shopping_bag,    // Clothing
-    Icons.brush,           // Hobbies
-    Icons.category,        // Others
+    Icons.fastfood,
+    Icons.directions_car,
+    Icons.movie,
+    Icons.shopping_cart,
+    Icons.local_hospital,
+    Icons.home,
+    Icons.school,
+    Icons.airplanemode_active,
+    Icons.card_giftcard,
+    Icons.opacity,
+    Icons.phone,
+    Icons.face,
+    Icons.shopping_basket,
+    Icons.category,
   ];
 
   List<String> incomeTypes = [
-    'Salary',
-    'Freelance',
-    'Investments',
-    'Gift',
-    'Rent',
-    'Bonus',
-    'Selling',
-    'Interest',
-    'Refund',
-    'Others',
+    '薪水',
+    '投資',
+    '禮金',
+    '租金',
+    '兼職',
+    '獎金',
+    '轉賣',
+    '利息',
+    '退款',
+    '其他',
   ];
 
   List<IconData> incomeIcons = [
     Icons.attach_money,
-    Icons.work,
     Icons.trending_up,
     Icons.card_giftcard,
     Icons.home,
-    Icons.card_giftcard,
+    Icons.work,
     Icons.local_grocery_store,
     Icons.show_chart,
     Icons.payment,
+    Icons.refresh,
     Icons.category,
   ];
 
@@ -84,7 +84,12 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // 初始化
+    selectedType = widget.type;
+    dateController.text = widget.date;
+    dollarController.text = widget.dollar;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +149,9 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
   }
 
   Widget _buildTypeSelection(List<String> types, List<IconData> icons) {
+    double iconWidth = MediaQuery.of(context).size.width / 6; // 將圖標的寬度設置為屏幕寬度的三分之一
+    double iconFontSize = iconWidth * 0.3;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -169,18 +177,21 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
                   ),
                 ),
                 child: Container(
-                  width: 80,
-                  height: 80,
+                  width: iconWidth, // 使用計算的圖標寬度
+                  height: iconWidth, // 使用計算的圖標寬度
                   alignment: Alignment.center,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         icon,
-                        size: 40,
+                        size: iconFontSize,
                       ),
                       const SizedBox(height: 8),
-                      Text(type),
+                      Text(
+                        type,
+                        style: TextStyle(fontSize: iconFontSize), // 使用計算的字體大小
+                      ),
                     ],
                   ),
                 ),
@@ -194,7 +205,7 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      height: MediaQuery.of(context).size.height / 2,
+      height: MediaQuery.of(context).size.height * 0.4,
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
       child: SingleChildScrollView(
@@ -224,35 +235,64 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
               // Dollar
-              TextField(
-                controller: dollarController,
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[ //只能輸入數字
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                decoration: const InputDecoration(
-                  labelText: 'Dollar',
-                  border: OutlineInputBorder(),
+              const SizedBox(height: 8),
+              Container(
+                height: MediaQuery.of(context).size.height / 12,
+                child: TextField(
+                  controller: dollarController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[ //只能輸入數字
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  decoration: const InputDecoration(
+                    labelText: 'Dollar',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
+
               const SizedBox(height: 8),
               // Remark
-              TextField(
-                controller: remarkController,
-                maxLength: 30, //字數限制
-                decoration: const InputDecoration(
-                  labelText: 'Remark',
-                  border: OutlineInputBorder(),
+              Container(
+                height: MediaQuery.of(context).size.height / 9,
+                child: TextField(
+                  controller: remarkController,
+                  maxLength: 30, //字數限制
+                  decoration: const InputDecoration(
+                    labelText: 'Remark',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
+              IconButton(
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red, // 更改為紅色
+                ),
+                onPressed: () {
+                  // TODO: Add logic to delete data
+                  _deleteDataAndReturnToHomePage();
+                },
+              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _deleteDataAndReturnToHomePage() async {
+    // TODO: 在這裡實現刪除數據的邏輯，這可能涉及發送 HTTP 刪除請求或調用某個服務。
+    // 你需要根據你的實際需求來實現這部分的邏輯。
+
+    // 延遲一些時間，模擬刪除的過程
+    await Future.delayed(const Duration(seconds: 2));
+
+    // TODO: 刪除數據的邏輯完成後，你可能還需要通知用戶或執行其他操作。
+
+    // 返回上一個頁面，並將一個標記指示刪除操作的結果返回
+    Navigator.of(context).pop(true);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -272,17 +312,27 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
   }
 
   Future<void> _saveDataAndReturnToHomePage() async {
-    // TODO: Add logic to save data to the database
-    // Simulate a delay (replace with your actual saving logic)
+    // 獲取新的數據
+    String updatedType = selectedType;
+    String updatedDate = dateController.text;
+    String updatedDollar = dollarController.text;
+
+    // TODO: 在這裡實現將新的數據保存到數據庫的邏輯，這可能涉及發送 HTTP 請求或調用某個服務。
+    // 你需要根據你的實際需求來實現這部分的邏輯。
+
+    // 延遲一些時間，模擬保存的過程
     await Future.delayed(const Duration(seconds: 2));
 
-    // Navigate back to the home page
-    Navigator.of(context).pop();
-  }
+    // 創建一個包含新數據的 Map
+    Map<String, dynamic> updatedData = {
+      'type': updatedType,
+      'date': updatedDate,
+      'dollar': updatedDollar,
+    };
 
-  @override
-  void dispose() {
-    _tabController?.dispose();
-    super.dispose();
+    // 通過 Navigator 返回上一個頁面，並將更新的數據作為結果返回
+    Navigator.of(context).pop(updatedData);
   }
 }
+
+
