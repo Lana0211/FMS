@@ -283,141 +283,86 @@ class _TransactionScreenState extends State<TransactionScreen>
   }
 
   Future<void> _saveDataAndReturnToHomePage() async {
-    String apiUrl;
-    String ExpenditureOrIncome = _tabController?.index == 0 ? 'expenditure' : 'income';
-    // Map<String, dynamic> postData = {
-    //   'user_id': 1, // 這裡應該是用戶ID，請替換為實際的用戶ID
-    //   'amount': double.parse(dollarController.text), // 從UI獲取金額
-    //   '{$ExpenditureOrIncome}_type': selectedType,
-    //   '{$ExpenditureOrIncome}_date': dateController.text,
-    // };
-
-    if (_tabController?.index == 0) {
-      // 如果是支出（Expenditure）
-      // apiUrl = 'https://db-accounting.azurewebsites.net/api/expenditures';
-      apiUrl = 'https://10.0.2.2:5000/api/expenditures';
-    } else {
-      // 如果是收入（Income）
-      // apiUrl = 'https://db-accounting.azurewebsites.net/api/incomes';
-      apiUrl = 'https://10.0.2.2:5000/api/incomes';
+    if (selectedType.isEmpty || dollarController.text.isEmpty || dateController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
     }
 
-    // 调用API获取type_name对应的type_id
-    String typeCategory = _tabController?.index == 0 ? 'expenditure' : 'income';
-    // String getTypeUrl = 'https://db-accounting.azurewebsites.net/api/types?type_name={$selectedType}s&type=$typeCategory';
-    String getTypeUrl = 'https://10.0.2.2:5000/api/types?type_name={$selectedType}s&type=$typeCategory';
+    // Assuming the user ID is available in the session or from user input
+    int userId = 1; // Replace with actual user ID
+
+    // Get the type ID from the API
+    var typeId;
+    var typeName = selectedType;
+    var apiUrl = 'http://db-accounting.azurewebsites.net/api/types'; // Replace with actual API URL
+    var typeCategory = _tabController?.index == 0 ? 'expenditure' : 'income'; // based on the selected tab
 
     try {
-      final response = await http.get(
-        Uri.parse(getTypeUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      var typeResponse = await http.get(
+        Uri.parse('$apiUrl?type_name=$typeName&type=$typeCategory'),
       );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        if (responseData.isNotEmpty) {
-
-          final int typeId = responseData['type_id'];
-
-          // 调用API保存数据
-          final saveResponse = await http.post(
-            Uri.parse(apiUrl),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({
-              // 'user_id': 1, // This should be the actual user ID
-              // 'amount': double.parse(dollarController.text).toStringAsFixed(2), // Format to 2 decimal places
-              // '${ExpenditureOrIncome}_type': typeId,
-              // '${ExpenditureOrIncome}_date': dateController.text,
-              {
-                "user_id": 1,
-                "amount": 100.00,
-                "expenditure_type": 1,
-                "expenditure_date": "2023-12-12"
-              }
-            }),
-          );
-
-          final responsetest = jsonDecode(response.body);
-          print('API Response Data: $responsetest');
-
-
-          if (saveResponse.statusCode == 201) {
-            // 如果成功保存数据，返回到主页
-            Navigator.of(context).pop();
-          } else {
-            // 失败处理，你可以根据实际需要处理错误
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text('Error'),
-                  content: const Text('Failed to save data. Please try again later.'),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('OK'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          }
-        } else {
-          // 失败处理，type_name不存在
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Error'),
-                content: Text('Selected type does not exist.'),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        }
+      if (typeResponse.statusCode == 200) {
+        var typeData = json.decode(typeResponse.body);
+        typeId = typeData['type_id'];
       } else {
-        // 失败处理，你可以根据实际需要处理错误
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text('Failed to fetch type data. Please try again later.'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        throw Exception('Failed to load type ID');
       }
-    } catch (error) {
-      // 异常处理，你可以根据实际需要处理异常
-      print('Error: $error');
+
+      // Construct the data payload
+      var data = _tabController?.index == 0 ? {
+        'user_id': userId,
+        'amount': double.parse(dollarController.text),
+        'expenditure_type': typeId,
+        'expenditure_date': dateController.text, // Adjust the key according to your API's expected parameters
+      }: {
+        'user_id': userId,
+        'amount': double.parse(dollarController.text),
+        'income_type': typeId,
+        'income_date': dateController.text,
+        // Adjust the key according to your API's expected parameters
+      };
+
+      print('Data to be sent: $data');
+
+      var saveUrl = _tabController?.index == 0
+          ? 'https://db-accounting.azurewebsites.net/api/expenditures' // Replace with actual Expenditure API URL
+          : 'https://db-accounting.azurewebsites.net/api/incomes'; // Replace with actual Income API URL
+
+      // Make the POST request to save the data
+      var saveResponse = await http.post(
+        Uri.parse(saveUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      if (saveResponse.statusCode == 201) {
+        // Successfully saved data
+        Navigator.of(context).pop(); // Go back to the home page
+      } else {
+        throw Exception('Failed to save data');
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    remarkController.dispose();
+    dollarController.dispose();
+    typeController.dispose();
+    dateController.dispose();
+    super.dispose();
+  }
 
 
-
-
-
+// Future<void> _saveDataAndReturnToHomePage() async {
   //   // Simulate a delay (replace with your actual saving logic)
   //   await Future.delayed(const Duration(seconds: 2));
   //
