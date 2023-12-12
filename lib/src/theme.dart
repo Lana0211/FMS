@@ -53,5 +53,7 @@ class AppTheme {
     // You can also define custom colors and use them throughout the theme
   );
 
+  static var listBackgroundColor;
+
 // If you need a dark theme, you can also define it here.
 }

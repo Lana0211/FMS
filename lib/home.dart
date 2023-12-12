@@ -3,6 +3,7 @@ import 'total.dart';
 import 'transaction.dart';
 import 'budget.dart';
 import 'stock.dart';
+import 'accounting.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -99,7 +100,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               IconButton(
                 icon: const Icon(Icons.update),
-                onPressed: () {
+                onPressed: () {Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AccountingScreen()),
+                ).then((value) {
+                  // This code runs when the TotalScreen page is popped.
+                  updateContent('Welcome to the Home Page!');
+                });
                   // Handle update action
                 },
                 color: _currentIndex == 3 ? Colors.blue : Colors.grey,
