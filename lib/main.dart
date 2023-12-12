@@ -8,6 +8,7 @@ import 'stock.dart';
 import 'accounting.dart';
 import 'transaction.dart';
 import 'login_page.dart';
+import 'profile.dart';
 
 
 void main() {
@@ -77,8 +78,8 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     TotalScreen(),
     BudgetScreen(),
-    StockScreen(),
     AccountingScreen(),
+    ProfileScreen(),
     // The TransactionScreen is not part of the bottom navigation pages
   ];
 
@@ -134,12 +135,12 @@ class _MainScreenState extends State<MainScreen> {
             SizedBox(width: 40), // The width of the FAB button
             _buildTabItem(
               index: 2,
-              iconData: Icons.settings,
-              label: 'Stock',
+              iconData: Icons.update,
+              label: 'Accounting',
             ),
             _buildTabItem(
               index: 3,
-              iconData: Icons.update,
+              iconData: Icons.settings,
               label: 'User',
             ),
           ],

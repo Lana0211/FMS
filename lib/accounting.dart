@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import 'src/theme.dart';
 import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
-import 'transaction_delete.dart';
+import 'expenditure_delete.dart';
+import 'income_delete.dart';
 
 class AccountingScreen extends StatefulWidget {
   @override
@@ -164,16 +165,30 @@ class _AccountingScreenState extends State<AccountingScreen> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TransactionDeleteScreen(
-                        type: record['type'],
-                        date: record['date'],
-                        dollar: record['amount'],
+                  if (record['amount'].startsWith('-')) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ExpenditureDeleteScreen(
+                          type: record['type'],
+                          date: record['date'],
+                          dollar: record['amount'],
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => IncomeDeleteScreen(
+                          type: 'initialType',
+                          date: 'initialDate',
+                          dollar: 'initialDollar',
+                          incomeId: 1, // Replace with the actual income ID
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
             );
@@ -185,7 +200,7 @@ class _AccountingScreenState extends State<AccountingScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TransactionDeleteScreen(
+        builder: (context) => ExpenditureDeleteScreen(
           type: 'initialType', // 初始的 type
           date: 'initialDate', // 初始的 date
           dollar: 'initialDollar', // 初始的 dollar

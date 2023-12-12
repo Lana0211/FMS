@@ -23,18 +23,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> fetchData() async {
     try {
       // Replace the URL with your backend API endpoint
-      var apiUrl = 'https://db-accounting.azurewebsites.net/api/user';
+      var apiUrl = 'https://db-accounting.azurewebsites.net/api/accounts/1';
       var response = await http.get(Uri.parse(apiUrl));
 
-      if (response.statusCode == 200) {
+      if (response.statusCode != 404) {
         // Parse the JSON response
         var data = json.decode(response.body);
 
         // Extract user information from the data
         setState(() {
-          userName = data['userName'];
-          phone = data['phone'];
-          email = data['email'];
+          userName = data['user_name'];
+          phone = data['user_phone'];
+          email = data['user_mail'];
         });
       } else {
         // Handle the case of a failed request
@@ -89,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Navigate to the login screen on logout
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
                     },
                     style: OutlinedButton.styleFrom(
