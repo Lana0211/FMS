@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class BudgetAddScreen extends StatefulWidget {
   @override
@@ -232,17 +234,84 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
   }
 
   Future<void> _saveDataAndReturnToHomePage() async {
-    // TODO: Add logic to save data to the database
-    // Simulate a delay (replace with your actual saving logic)
-    await Future.delayed(const Duration(seconds: 2));
+    // Validate inputs
+    if (selectedType.isEmpty || dollarController.text.isEmpty || dateController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
 
-    // Navigate back to the home page
-    Navigator.of(context).pop();
+    // Assuming the user ID is available in the session or from user input
+    int userId = 1; // Replace with actual user ID
+
+    // Get the type ID from the API
+    var typeId;
+    var apiUrl = 'https://db-accounting.azurewebsites.net/api/types'; // Replace with actual API URL
+
+    try {
+      var typeResponse = await http.get(
+        Uri.parse('$apiUrl?type_name=$selectedType&type=expenditure'),
+      );
+
+      if (typeResponse.statusCode == 200) {
+        var typeData = json.decode(typeResponse.body);
+        typeId = typeData['type_id'];
+      } else {
+        throw Exception('Failed to load type ID');
+      }
+
+      // Construct the budget data payload
+      var budgetData = {
+        'user_id': userId,
+        'amount': double.parse(dollarController.text),
+        'expenditure_type': typeId,
+        'budget_date': dateController.text,
+      };
+
+      // Print the data to console for debugging
+      print('Budget Data to be sent: $budgetData');
+
+      // API URL for creating a budget
+      var budgetApiUrl = 'https://db-accounting.azurewebsites.net/api/budgets'; // Replace with actual Budget API URL
+
+      // Make the POST request to save the budget data
+      var budgetResponse = await http.post(
+        Uri.parse(budgetApiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(budgetData),
+      );
+
+
+      if (budgetResponse.statusCode == 201) {
+        // Successfully saved budget data
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Budget created successfully.')),
+        );
+        Navigator.of(context).pop(); // Go back to the home page
+      } else {
+        throw Exception('Failed to save budget data');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
-  @override
-  void dispose() {
-    _tabController?.dispose();
-    super.dispose();
-  }
+
+// Future<void> _saveDataAndReturnToHomePage() async {
+  //   // TODO: Add logic to save data to the database
+  //   // Simulate a delay (replace with your actual saving logic)
+  //   await Future.delayed(const Duration(seconds: 2));
+  //
+  //   // Navigate back to the home page
+  //   Navigator.of(context).pop();
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   _tabController?.dispose();
+  //   super.dispose();
+  // }
 }
