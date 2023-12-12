@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'login_page.dart'; // Import your login screen file
 
@@ -23,7 +24,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> fetchData() async {
     try {
       // Replace the URL with your backend API endpoint
-      var apiUrl = 'https://db-accounting.azurewebsites.net/api/accounts/1';
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final int? userID = prefs.getInt('user_id');
+      var apiUrl = 'https://db-accounting.azurewebsites.net/api/accounts/$userID';
       var response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode != 404) {

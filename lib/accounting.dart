@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'expenditure_delete.dart';
 import 'income_delete.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class AccountingScreen extends StatefulWidget {
   @override
@@ -27,8 +29,16 @@ class _AccountingScreenState extends State<AccountingScreen> {
     var year = selectedDate.year.toString();
     var month = selectedDate.month.toString().padLeft(2, '0');
 
-    var expenditureEndpoint = 'https://db-accounting.azurewebsites.net/api/expenditures?year=$year&month=$month';
-    var incomeEndpoint = 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month';
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('user_id');
+
+    // var expenditureEndpoint = 'http://10.0.2.2:5000/api/expenditures?year=$year&month=$month&user_id=$userID';
+    // var incomeEndpoint = 'http://10.0.2.2:5000/api/incomes?year=$year&month=$month&user_id=$userID';
+
+    var expenditureEndpoint = 'https://db-accounting.azurewebsites.net/api/expenditures?year=$year&month=$month&user_id=$userID';
+    var incomeEndpoint = 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month&user_id=$userID';
+
+    // var incomeEndpoint = 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month';
 
     try {
       var expenditureResponse = await http.get(Uri.parse(expenditureEndpoint));

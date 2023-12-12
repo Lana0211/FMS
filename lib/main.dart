@@ -74,7 +74,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 3;
+  int _currentIndex = 2;
   final List<Widget> _pages = [
     TotalScreen(),
     BudgetScreen(),
@@ -107,7 +107,13 @@ class _MainScreenState extends State<MainScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => TransactionScreen()),
-          );
+          ).then((_) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => MainScreen()),
+                  (Route<dynamic> route) => false,
+            );
+          });
         },
         shape: const CircleBorder(),
         child: const Icon(Icons.add),
@@ -125,23 +131,23 @@ class _MainScreenState extends State<MainScreen> {
             _buildTabItem(
               index: 0,
               iconData: Icons.account_balance_wallet,
-              label: 'Total',
+              label: '報表',
             ),
             _buildTabItem(
               index: 1,
               iconData: Icons.edit_document,
-              label: 'Budget',
+              label: '預算',
             ),
             SizedBox(width: 40), // The width of the FAB button
             _buildTabItem(
               index: 2,
               iconData: Icons.update,
-              label: 'Accounting',
+              label: '賬簿',
             ),
             _buildTabItem(
               index: 3,
               iconData: Icons.settings,
-              label: 'User',
+              label: '用戶',
             ),
           ],
         ),

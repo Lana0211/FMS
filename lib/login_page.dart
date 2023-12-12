@@ -214,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (response.statusCode == 200){
       final String userId = data['user_id'].toString();
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_id', userId);
+      await prefs.setInt('user_id', int.parse(userId));
       await prefs.setBool('is_logged_in', true);
 
       // 導航到主頁面

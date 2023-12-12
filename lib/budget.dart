@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:math' as math;
 import 'budget_add.dart';
 import 'src/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BudgetScreen extends StatefulWidget {
   @override
@@ -30,10 +31,13 @@ class _BudgetScreenState extends State<BudgetScreen> {
     expenditures = [];
     budgets = [];
 
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('user_id');
+
     final String year = selectedDate.year.toString();
     final String month = selectedDate.month.toString().padLeft(2, '0');
     const String typesUrl = 'https://db-accounting.azurewebsites.net/api/types?type=expenditure';
-    final String budgetsUrl = 'https://db-accounting.azurewebsites.net/api/budgets?year=$year&month=$month';
+    final String budgetsUrl = 'https://db-accounting.azurewebsites.net/api/budgets?year=$year&month=$month&user_id=$userID';
 
     try {
       // Fetching budgets
@@ -229,6 +233,21 @@ class _BudgetScreenState extends State<BudgetScreen> {
       ),
     );
   }
+
+  void _navigateToBudgetAdd(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => BudgetAddScreen()),
+    ).then((value) {
+      // Handle the result when the BudgetAddScreen page is popped.
+      if (value != null) {
+        print('hiii');
+        setState(() {
+          fetchTypesAndBudgets();
+        });
+      }
+    });
+  }
 }
 
 class BarChartWidget extends StatelessWidget {
@@ -284,17 +303,3 @@ class BarData {
   BarData({required this.expenditureTypes, required this.expenditures, required this.budgets});
 }
 
-void _navigateToBudgetAdd(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => BudgetAddScreen()),
-  ).then((value) {
-    // Handle the result when the BudgetAddScreen page is popped.
-    if (value != null) {
-      // Assuming value is the newly added budget data.
-      // You can handle the data as needed.
-      // For example, update the UI with the new data.
-      // Update the budgets list and any other necessary data.
-    }
-  });
-}

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'src/theme.dart';
 import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TotalScreen extends StatefulWidget {
   @override
@@ -28,11 +29,14 @@ class _TotalScreenState extends State<TotalScreen> {
     typeAndAmountList = [];
     totalAmount = 0.0;
 
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('user_id');
+
     final String year = selectedDate.year.toString();
     final String month = selectedDate.month.toString().padLeft(2, '0'); // 確保月份是兩位數
     final String endpoint = isExpenditure
-        ? 'https://db-accounting.azurewebsites.net/api/expenditures?year=$year&month=$month'
-        : 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month';
+        ? 'https://db-accounting.azurewebsites.net/api/expenditures?year=$year&month=$month&user_id=$userID'
+        : 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month&user_id=$userID';
 
     try {
       final response = await http.get(Uri.parse(endpoint));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BudgetAddScreen extends StatefulWidget {
   @override
@@ -242,8 +243,8 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
       return;
     }
 
-    // Assuming the user ID is available in the session or from user input
-    int userId = 1; // Replace with actual user ID
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? userID = prefs.getInt('user_id');
 
     // Get the type ID from the API
     var typeId;
@@ -263,7 +264,7 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
 
       // Construct the budget data payload
       var budgetData = {
-        'user_id': userId,
+        'user_id': userID,
         'amount': double.parse(dollarController.text),
         'expenditure_type': typeId,
         'budget_date': dateController.text,
@@ -288,7 +289,7 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Budget created successfully.')),
         );
-        Navigator.of(context).pop(); // Go back to the home page
+        Navigator.of(context).pop('finish'); // Go back to the home page
       } else {
         throw Exception('Failed to save budget data');
       }

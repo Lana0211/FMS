@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
 class TransactionScreen extends StatefulWidget {
@@ -274,8 +275,7 @@ class _TransactionScreenState extends State<TransactionScreen>
       return;
     }
 
-    // Assuming the user ID is available in the session or from user input
-    int userId = 1; // Replace with actual user ID
+
 
     // Get the type ID from the API
     var typeId;
@@ -295,14 +295,18 @@ class _TransactionScreenState extends State<TransactionScreen>
         throw Exception('Failed to load type ID');
       }
 
+      // Assuming the user ID is available in the session or from user input
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final int? userID = prefs.getInt('user_id');
+
       // Construct the data payload
       var data = _tabController?.index == 0 ? {
-        'user_id': userId,
+        'user_id': userID,
         'amount': double.parse(dollarController.text),
         'expenditure_type': typeId,
         'expenditure_date': dateController.text, // Adjust the key according to your API's expected parameters
       }: {
-        'user_id': userId,
+        'user_id': userID,
         'amount': double.parse(dollarController.text),
         'income_type': typeId,
         'income_date': dateController.text,
