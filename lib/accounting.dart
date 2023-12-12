@@ -181,14 +181,16 @@ class _AccountingScreenState extends State<AccountingScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => IncomeDeleteScreen(
-                          type: record['type'],
-                          date: record['date'],
-                          dollar: record['amount'],
+                          type: 'initialType',
+                          date: 'initialDate',
+                          dollar: 'initialDollar',
+                          incomeId: 1, // Replace with the actual income ID
                         ),
                       ),
                     );
                   }
                 },
+
               ),
             );
           },

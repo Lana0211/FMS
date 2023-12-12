@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class IncomeDeleteScreen extends StatefulWidget {
   final String type;
   final String date;
   final String dollar;
+  final int incomeId;
 
-  IncomeDeleteScreen({required this.type, required this.date, required this.dollar});
+  IncomeDeleteScreen({required this.type, required this.date, required this.dollar, required this.incomeId,});
 
   @override
   _IncomeDeleteScreenState createState() => _IncomeDeleteScreenState();
@@ -266,25 +269,33 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
   }
 
   Future<void> _saveDataAndReturnToHomePage() async {
-    // 獲取新的數據
+    // Get updated data
     String updatedType = selectedType;
     String updatedDate = dateController.text;
     String updatedDollar = dollarController.text;
 
-    // TODO: 在這裡實現將新的數據保存到數據庫的邏輯，這可能涉及發送 HTTP 請求或調用某個服務。
-    // 你需要根據你的實際需求來實現這部分的邏輯。
+    // Make a PUT request to update income
+    final response = await http.put(
+      Uri.parse('https://db-accounting.azurewebsites.net/api/incomes/${widget.incomeId}'), // Convert string to Uri
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'amount': updatedDollar,
+        'income_type': updatedType,
+        'income_date': updatedDate,
+      }),
+    );
 
-    // 延遲一些時間，模擬保存的過程
-    await Future.delayed(const Duration(seconds: 2));
+    if (response.statusCode == 200) {
+      // Parse the response if needed
+      // TODO: Handle success
+    } else {
+      // Handle errors
+      // TODO: Show an error message or handle the error appropriately
+    }
 
-    // 創建一個包含新數據的 Map
-    Map<String, dynamic> updatedData = {
-      'type': updatedType,
-      'date': updatedDate,
-      'dollar': updatedDollar,
-    };
-
-    // 通過 Navigator 返回上一個頁面，並將更新的數據作為結果返回
-    Navigator.of(context).pop(updatedData);
+    // Return to the previous screen
+    Navigator.of(context).pop();
   }
 }
