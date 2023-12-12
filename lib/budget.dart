@@ -91,9 +91,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text('Budget'),
-        ),
+        title: const Text('Budget'),
         actions: [
           IconButton(
             icon: Icon(Icons.add),

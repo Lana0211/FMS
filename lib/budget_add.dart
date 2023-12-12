@@ -11,37 +11,37 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
   TabController? _tabController;
   String selectedType = '';
   List<String> expenditureTypes = [
-    'Food',
-    'Transport',
-    'Shopping',
-    'Entertain',
-    'Healthcare',
-    'Rent',
-    'Education',
-    'Travel',
-    'Gifts',
-    'Insurance',
-    'Technology',
-    'Clothing',
-    'Hobbies',
-    'Others',
+    '餐飲',
+    '交通',
+    '娛樂',
+    '購物',
+    '醫療',
+    '住房',
+    '學習',
+    '旅行',
+    '禮品',
+    '水電',
+    '通訊',
+    '美容',
+    '日用',
+    '其他',
   ];
 
   List<IconData> expenditureIcons = [
-    Icons.fastfood,        // Food
-    Icons.directions_car,  // Transportation
-    Icons.shopping_cart,   // Shopping
-    Icons.movie,           // Entertainment
-    Icons.local_hospital,  // Healthcare
-    Icons.home,            // Rent
-    Icons.school,          // Education
-    Icons.airplanemode_active, // Travel
-    Icons.card_giftcard,   // Gifts
-    Icons.local_hospital,  // Insurance
-    Icons.devices,         // Technology
-    Icons.shopping_bag,    // Clothing
-    Icons.brush,           // Hobbies
-    Icons.category,        // Others
+    Icons.fastfood,
+    Icons.directions_car,
+    Icons.movie,
+    Icons.shopping_cart,
+    Icons.local_hospital,
+    Icons.home,
+    Icons.school,
+    Icons.airplanemode_active,
+    Icons.card_giftcard,
+    Icons.opacity,
+    Icons.phone,
+    Icons.face,
+    Icons.shopping_basket,
+    Icons.category,
   ];
 
   TextEditingController remarkController = TextEditingController();
@@ -109,6 +109,8 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
   }
 
   Widget _buildTypeSelection(List<String> types, List<IconData> icons) {
+    double iconWidth = MediaQuery.of(context).size.width / 6; // 將圖標的寬度設置為屏幕寬度的三分之一
+    double iconFontSize = iconWidth * 0.3;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -134,18 +136,21 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
                   ),
                 ),
                 child: Container(
-                  width: 80,
-                  height: 80,
+                  width: iconWidth, // 使用計算的圖標寬度
+                  height: iconWidth, // 使用計算的圖標寬度
                   alignment: Alignment.center,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         icon,
-                        size: 40,
+                        size: iconFontSize,
                       ),
                       const SizedBox(height: 8),
-                      Text(type),
+                      Text(
+                        type,
+                        style: TextStyle(fontSize: iconFontSize), // 使用計算的字體大小
+                      ),
                     ],
                   ),
                 ),
@@ -159,7 +164,7 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      height: MediaQuery.of(context).size.height / 2,
+      height: MediaQuery.of(context).size.height * 0.3,
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
       child: SingleChildScrollView(

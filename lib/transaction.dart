@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -281,17 +283,151 @@ class _TransactionScreenState extends State<TransactionScreen>
   }
 
   Future<void> _saveDataAndReturnToHomePage() async {
-    // TODO: Add logic to save data to the database
-    // Simulate a delay (replace with your actual saving logic)
-    await Future.delayed(const Duration(seconds: 2));
+    String apiUrl;
+    String ExpenditureOrIncome = _tabController?.index == 0 ? 'expenditure' : 'income';
+    // Map<String, dynamic> postData = {
+    //   'user_id': 1, // 這裡應該是用戶ID，請替換為實際的用戶ID
+    //   'amount': double.parse(dollarController.text), // 從UI獲取金額
+    //   '{$ExpenditureOrIncome}_type': selectedType,
+    //   '{$ExpenditureOrIncome}_date': dateController.text,
+    // };
 
-    // Navigate back to the home page
-    Navigator.of(context).pop();
-  }
+    if (_tabController?.index == 0) {
+      // 如果是支出（Expenditure）
+      // apiUrl = 'https://db-accounting.azurewebsites.net/api/expenditures';
+      apiUrl = 'https://10.0.2.2:5000/api/expenditures';
+    } else {
+      // 如果是收入（Income）
+      // apiUrl = 'https://db-accounting.azurewebsites.net/api/incomes';
+      apiUrl = 'https://10.0.2.2:5000/api/incomes';
+    }
 
-  @override
-  void dispose() {
-    _tabController?.dispose();
-    super.dispose();
-  }
+    // 调用API获取type_name对应的type_id
+    String typeCategory = _tabController?.index == 0 ? 'expenditure' : 'income';
+    // String getTypeUrl = 'https://db-accounting.azurewebsites.net/api/types?type_name={$selectedType}s&type=$typeCategory';
+    String getTypeUrl = 'https://10.0.2.2:5000/api/types?type_name={$selectedType}s&type=$typeCategory';
+
+    try {
+      final response = await http.get(
+        Uri.parse(getTypeUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData.isNotEmpty) {
+
+          final int typeId = responseData['type_id'];
+
+          // 调用API保存数据
+          final saveResponse = await http.post(
+            Uri.parse(apiUrl),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              // 'user_id': 1, // This should be the actual user ID
+              // 'amount': double.parse(dollarController.text).toStringAsFixed(2), // Format to 2 decimal places
+              // '${ExpenditureOrIncome}_type': typeId,
+              // '${ExpenditureOrIncome}_date': dateController.text,
+              {
+                "user_id": 1,
+                "amount": 100.00,
+                "expenditure_type": 1,
+                "expenditure_date": "2023-12-12"
+              }
+            }),
+          );
+
+          final responsetest = jsonDecode(response.body);
+          print('API Response Data: $responsetest');
+
+
+          if (saveResponse.statusCode == 201) {
+            // 如果成功保存数据，返回到主页
+            Navigator.of(context).pop();
+          } else {
+            // 失败处理，你可以根据实际需要处理错误
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Error'),
+                  content: const Text('Failed to save data. Please try again later.'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('OK'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        } else {
+          // 失败处理，type_name不存在
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Selected type does not exist.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        // 失败处理，你可以根据实际需要处理错误
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Failed to fetch type data. Please try again later.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (error) {
+      // 异常处理，你可以根据实际需要处理异常
+      print('Error: $error');
+      }
+    }
+
+
+
+
+
+  //   // Simulate a delay (replace with your actual saving logic)
+  //   await Future.delayed(const Duration(seconds: 2));
+  //
+  //   // Navigate back to the home page
+  //   Navigator.of(context).pop();
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   _tabController?.dispose();
+  //   super.dispose();
+  // }
 }
