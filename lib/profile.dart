@@ -58,21 +58,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              leading: Icon(Icons.person), // Person icon on the left
+              leading: const Icon(Icons.person), // Person icon on the left
               title: Text(
                 'User Name: $userName',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(
-              leading: Icon(Icons.phone), // Phone icon on the left
+              leading: const Icon(Icons.phone), // Phone icon on the left
               title: Text(
                 'Phone: $phone',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(
-              leading: Icon(Icons.email), // Email icon on the left
+              leading: const Icon(Icons.email), // Email icon on the left
               title: Text(
                 'Email: $email',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -96,11 +96,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0), // Border radius for a square button
                       ),
-                      side: BorderSide(
+                      side: const BorderSide(
                         color: Color(0xFFEA0000), // Border color
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Logout',
                       style: TextStyle(
                         color: Color(0xFFEA0000), // Text color

@@ -205,7 +205,7 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.4,
+      height: MediaQuery.of(context).size.height * 0.3,
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
       child: SingleChildScrollView(
@@ -215,9 +215,24 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Selected Type
-              Text(
-                'Selected Type: $selectedType',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Selected Type: $selectedType',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.red, // 更改為紅色
+                    ),
+                    onPressed: () {
+                      // TODO: Add logic to delete data
+                      _deleteDataAndReturnToHomePage();
+                    },
+                  ),
+                ],
               ),
               // Display selected type at the bottom
               const SizedBox(height: 8),
@@ -253,18 +268,6 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
               ),
 
               const SizedBox(height: 8),
-              // Remark
-              Container(
-                height: MediaQuery.of(context).size.height / 9,
-                child: TextField(
-                  controller: remarkController,
-                  maxLength: 30, //字數限制
-                  decoration: const InputDecoration(
-                    labelText: 'Remark',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
               IconButton(
                 icon: Icon(
                   Icons.delete,
@@ -334,5 +337,3 @@ class _TransactionDeleteScreenState extends State<TransactionDeleteScreen>
     Navigator.of(context).pop(updatedData);
   }
 }
-
-
