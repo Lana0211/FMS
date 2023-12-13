@@ -80,13 +80,12 @@ class _MainScreenState extends State<MainScreen> {
     BudgetScreen(),
     AccountingScreen(),
     ProfileScreen(),
-    // The TransactionScreen is not part of the bottom navigation pages
   ];
 
   // Placeholder to match the FAB width.
   final BottomNavigationBarItem fabPlaceholder = const BottomNavigationBarItem(
     icon: Icon(null), // Empty icon
-    label: 'Placeholder', // Placeholder text, can be left empty or null for no text
+    label: 'Placeholder', // Placeholder text
   );
 
   void _onItemTapped(int index) {

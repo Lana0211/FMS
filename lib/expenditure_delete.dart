@@ -84,7 +84,6 @@ class _ExpenditureDeleteScreenState extends State<ExpenditureDeleteScreen>
               IconButton(
                 icon: const Icon(Icons.check),
                 onPressed: () {
-                  // TODO: Add logic to save data and return to homepage
                   _saveDataAndReturnToHomePage();
                 },
               ),
@@ -115,7 +114,6 @@ class _ExpenditureDeleteScreenState extends State<ExpenditureDeleteScreen>
 
   Future<bool> _onWillPop() async {
     // Handle the case when the user presses the back button
-    // You can add additional logic here if needed
     return true; // Return true to allow pop
   }
 
@@ -199,7 +197,6 @@ class _ExpenditureDeleteScreenState extends State<ExpenditureDeleteScreen>
                       color: Colors.red, // 更改為紅色
                     ),
                     onPressed: () {
-                      // TODO: Add logic to delete data
                       _deleteDataAndReturnToHomePage();
                     },
                   ),
@@ -259,14 +256,8 @@ class _ExpenditureDeleteScreenState extends State<ExpenditureDeleteScreen>
       );
 
       if (response.statusCode == 200) {
-        // 删除成功，你可以在这里处理成功的逻辑
-        // 比如显示成功消息，导航回主页等等
-
-        // 返回上一个页面，并传递一个标志表示删除成功
         Navigator.of(context).pop(true);
       } else {
-        // 删除失败，你可以在这里处理失败的逻辑
-        // 比如显示错误消息等等
       }
     } catch (e) {
       // 捕获异常，处理网络请求出错的情况
@@ -339,22 +330,16 @@ class _ExpenditureDeleteScreenState extends State<ExpenditureDeleteScreen>
       );
 
       if (response.statusCode == 200) {
-        // 更新成功，你可以在这里处理成功的逻辑
-        // 比如显示成功消息，导航回主页等等
-
         // 返回上一个页面
         Navigator.of(context).pop();
       } else {
-        // 更新失败，你可以在这里处理失败的逻辑
-        // 比如显示错误消息，回滚修改等等
       }
     } catch (e) {
       // 捕获异常，处理网络请求出错的情况
       print('Error: $e');
-      // 可以显示错误消息或采取其他措施
     }
 
-    // 通過 Navigator 返回上一個頁面，並將更新的數據作為結果返回
+    // 通過 Navigator 返回上一個頁面
     Navigator.of(context).pop();
   }
 }

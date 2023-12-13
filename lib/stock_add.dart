@@ -87,11 +87,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
   }
 
   void _saveDataAndReturnToStockScreen() {
-    // TODO: Add logic to save data to the database
-
-    // Simulate a delay (replace with your actual saving logic)
     Future.delayed(const Duration(seconds: 2), () {
-      // 儲存完成，返回到 StockScreen
       Navigator.of(context).pop();
     });
   }

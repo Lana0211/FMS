@@ -78,7 +78,6 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
               IconButton(
                 icon: const Icon(Icons.check),
                 onPressed: () {
-                  // TODO: Add logic to save data and return to homepage
                   _saveDataAndReturnToHomePage();
                 },
               ),
@@ -108,8 +107,6 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
   }
 
   Future<bool> _onWillPop() async {
-    // Handle the case when the user presses the back button
-    // You can add additional logic here if needed
     return true; // Return true to allow pop
   }
 
@@ -193,7 +190,6 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
                       color: Colors.red, // 更改為紅色
                     ),
                     onPressed: () {
-                      // TODO: Add logic to delete data
                       _deleteDataAndReturnToHomePage();
                     },
                   ),
@@ -240,14 +236,7 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
   }
 
   Future<void> _deleteDataAndReturnToHomePage() async {
-    // TODO: 在這裡實現刪除數據的邏輯，這可能涉及發送 HTTP 刪除請求或調用某個服務。
-    // 你需要根據你的實際需求來實現這部分的邏輯。
-
-    // 延遲一些時間，模擬刪除的過程
     await Future.delayed(const Duration(seconds: 2));
-
-    // TODO: 刪除數據的邏輯完成後，你可能還需要通知用戶或執行其他操作。
-
     // 返回上一個頁面，並將一個標記指示刪除操作的結果返回
     Navigator.of(context).pop(true);
   }
@@ -288,11 +277,8 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
     );
 
     if (response.statusCode == 200) {
-      // Parse the response if needed
-      // TODO: Handle success
     } else {
       // Handle errors
-      // TODO: Show an error message or handle the error appropriately
     }
 
     // Return to the previous screen

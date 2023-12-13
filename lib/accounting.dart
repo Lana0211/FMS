@@ -32,13 +32,9 @@ class _AccountingScreenState extends State<AccountingScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? userID = prefs.getInt('user_id');
 
-    // var expenditureEndpoint = 'http://10.0.2.2:5000/api/expenditures?year=$year&month=$month&user_id=$userID';
-    // var incomeEndpoint = 'http://10.0.2.2:5000/api/incomes?year=$year&month=$month&user_id=$userID';
 
     var expenditureEndpoint = 'https://db-accounting.azurewebsites.net/api/expenditures?year=$year&month=$month&user_id=$userID';
     var incomeEndpoint = 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month&user_id=$userID';
-
-    // var incomeEndpoint = 'https://db-accounting.azurewebsites.net/api/incomes?year=$year&month=$month';
 
     try {
       var expenditureResponse = await http.get(Uri.parse(expenditureEndpoint));
@@ -220,12 +216,9 @@ class _AccountingScreenState extends State<AccountingScreen> {
 
     // 如果結果不為 null，表示用戶點擊了保存按鈕，並且有新數據返回
     if (result != null) {
-      // 在這裡處理返回的結果，result 就是包含更新數據的 Map
-      String updatedType = result['type'];
-      String updatedDate = result['date'];
-      String updatedDollar = result['dollar'];
-
-      // TODO: 根據需要進行相應的處理，例如更新 UI 或其他操作。
+      // String updatedType = result['type'];
+      // String updatedDate = result['date'];
+      // String updatedDollar = result['dollar'];
     }
   }
 }

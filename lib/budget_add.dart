@@ -274,7 +274,7 @@ class _BudgetAddScreenState extends State<BudgetAddScreen>
       print('Budget Data to be sent: $budgetData');
 
       // API URL for creating a budget
-      var budgetApiUrl = 'https://db-accounting.azurewebsites.net/api/budgets'; // Replace with actual Budget API URL
+      var budgetApiUrl = 'https://db-accounting.azurewebsites.net/api/budgets';
 
       // Make the POST request to save the budget data
       var budgetResponse = await http.post(

@@ -101,7 +101,6 @@ class _TransactionScreenState extends State<TransactionScreen>
               IconButton(
                 icon: const Icon(Icons.check),
                 onPressed: () {
-                  // TODO: Add logic to save data and return to homepage
                   _saveDataAndReturnToHomePage();
                 },
               ),
@@ -135,8 +134,6 @@ class _TransactionScreenState extends State<TransactionScreen>
   }
 
   Future<bool> _onWillPop() async {
-    // Handle the case when the user presses the back button
-    // You can add additional logic here if needed
     return true; // Return true to allow pop
   }
 
@@ -275,8 +272,6 @@ class _TransactionScreenState extends State<TransactionScreen>
       return;
     }
 
-
-
     // Get the type ID from the API
     var typeId;
     var typeName = selectedType;
@@ -295,7 +290,6 @@ class _TransactionScreenState extends State<TransactionScreen>
         throw Exception('Failed to load type ID');
       }
 
-      // Assuming the user ID is available in the session or from user input
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final int? userID = prefs.getInt('user_id');
 

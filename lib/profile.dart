@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'login_page.dart'; // Import your login screen file
+import 'login_page.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -17,20 +17,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Call the backend API to get user data
     fetchData();
   }
 
   Future<void> fetchData() async {
     try {
-      // Replace the URL with your backend API endpoint
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final int? userID = prefs.getInt('user_id');
       var apiUrl = 'https://db-accounting.azurewebsites.net/api/accounts/$userID';
       var response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode != 404) {
-        // Parse the JSON response
         var data = json.decode(response.body);
 
         // Extract user information from the data

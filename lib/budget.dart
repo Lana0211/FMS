@@ -241,7 +241,6 @@ class _BudgetScreenState extends State<BudgetScreen> {
     ).then((value) {
       // Handle the result when the BudgetAddScreen page is popped.
       if (value != null) {
-        print('hiii');
         setState(() {
           fetchTypesAndBudgets();
         });

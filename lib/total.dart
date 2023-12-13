@@ -277,7 +277,6 @@ class _TotalScreenState extends State<TotalScreen> {
                 ],
               ),
               onTap: () {
-                // 获取被点击项的年月字符串
                 String yearMonth = DateFormat('yyyy-MM').format(DateTime.parse(item['date']));
                 Navigator.push(
                   context,
@@ -308,10 +307,8 @@ class TypeTotalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 找出相同類型和年月的資料
     List<Map<String, dynamic>> filteredData = allData.where((item) {
       DateTime date = DateTime.parse(item['date']);
-      // 格式化日期
       String itemYearMonth = DateFormat('yyyy-MM').format(date);
       return item['type'] == type && itemYearMonth == yearMonth;
     }).toList();
