@@ -18,6 +18,9 @@ void main() {
 Future<bool> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  if(prefs.getBool('is_logged_in') == null){
+    await prefs.setBool('is_logged_in', false);
+  }
   final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
 
   return isLoggedIn;

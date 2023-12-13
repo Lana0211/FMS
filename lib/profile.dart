@@ -88,6 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () async {
                       SharedPreferences prefs = await SharedPreferences.getInstance();
                       await prefs.remove('user_id');
+                      await prefs.setBool('is_logged_in', false);
 
                       // Navigate to the login screen on logout
                       Navigator.pushReplacement(
