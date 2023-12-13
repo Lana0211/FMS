@@ -7,9 +7,9 @@ class IncomeDeleteScreen extends StatefulWidget {
   final String type;
   final String date;
   final String dollar;
-  final int incomeId;
+  final int income_id;
 
-  IncomeDeleteScreen({required this.type, required this.date, required this.dollar, required this.incomeId,});
+  IncomeDeleteScreen({required this.type, required this.date, required this.dollar, required this.income_id,});
 
   @override
   _IncomeDeleteScreenState createState() => _IncomeDeleteScreenState();
@@ -235,11 +235,7 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
     );
   }
 
-  Future<void> _deleteDataAndReturnToHomePage() async {
-    await Future.delayed(const Duration(seconds: 2));
-    // 返回上一個頁面，並將一個標記指示刪除操作的結果返回
-    Navigator.of(context).pop(true);
-  }
+
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -257,31 +253,80 @@ class _IncomeDeleteScreenState extends State<IncomeDeleteScreen>
     }
   }
 
+  Future<int?> getTypeID(String typeName) async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://db-accounting.azurewebsites.net/api/types?type=income&type_name=$typeName'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data.isNotEmpty) {
+          return data['type_id'];
+        }
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    return null;
+  }
+
+
+
   Future<void> _saveDataAndReturnToHomePage() async {
-    // Get updated data
+    // 獲取新的數據
+    final int update_id = widget.income_id;
     String updatedType = selectedType;
     String updatedDate = dateController.text;
     String updatedDollar = dollarController.text;
 
-    // Make a PUT request to update income
-    final response = await http.put(
-      Uri.parse('https://db-accounting.azurewebsites.net/api/incomes/${widget.incomeId}'), // Convert string to Uri
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'amount': updatedDollar,
-        'income_type': updatedType,
-        'income_date': updatedDate,
-      }),
-    );
+    int? typeId = await getTypeID(updatedType);
 
-    if (response.statusCode == 200) {
-    } else {
-      // Handle errors
+    Map<String, dynamic> requestData = {
+      'amount': updatedDollar,
+      'income_type': typeId,
+      'income_date': updatedDate,
+    };
+
+    String requestBody = jsonEncode(requestData);
+
+    try {
+      // 发送HTTP PUT请求
+      final response = await http.put(
+        Uri.parse('https://db-accounting.azurewebsites.net/api/incomes/$update_id'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: requestBody,
+      );
+
+        Navigator.of(context).pop();
+        print(response.body);
+    } catch (e) {
+      // 捕获异常，处理网络请求出错的情况
+      print('Error: $e');
     }
-
-    // Return to the previous screen
-    Navigator.of(context).pop();
   }
+
+  Future<void> _deleteDataAndReturnToHomePage() async {
+    final int delet_id = widget.income_id;
+
+    try {
+      // 发送HTTP DELETE请求
+      final response = await http.delete(
+        Uri.parse('https://db-accounting.azurewebsites.net/api/incomes/$delet_id'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      Navigator.of(context).pop(true);
+      print(response.body);
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+
 }

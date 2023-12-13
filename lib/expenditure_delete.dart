@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,8 +8,9 @@ class ExpenditureDeleteScreen extends StatefulWidget {
   final String type;
   final String date;
   final String dollar;
+  final int expenditure_id;
 
-  ExpenditureDeleteScreen({required this.type, required this.date, required this.dollar});
+  ExpenditureDeleteScreen({required this.type, required this.date, required this.dollar, required this.expenditure_id});
   @override
   _ExpenditureDeleteScreenState createState() => _ExpenditureDeleteScreenState();
 }
@@ -243,26 +245,21 @@ class _ExpenditureDeleteScreenState extends State<ExpenditureDeleteScreen>
     );
   }
 
-  Future<void> _deleteDataAndReturnToHomePage() async {
 
-    int? typeId = await getTypeID(selectedType);
-    try {
-      // 发送HTTP DELETE请求
-      final response = await http.delete(
-        Uri.parse('https://db-accounting.azurewebsites.net/api/expenditures/$typeId'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
 
-      if (response.statusCode == 200) {
-        Navigator.of(context).pop(true);
-      } else {
-      }
-    } catch (e) {
-      // 捕获异常，处理网络请求出错的情况
-      print('Error: $e');
-      // 可以显示错误消息或采取其他措施
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      // 格式化選擇的日期，只保留日期部分
+      final formattedDate = "${picked.year}-${picked.month}-${picked.day}";
+      setState(() {
+        dateController.text = formattedDate;
+      });
     }
   }
 
@@ -287,24 +284,9 @@ class _ExpenditureDeleteScreenState extends State<ExpenditureDeleteScreen>
 
 
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null) {
-      // 格式化選擇的日期，只保留日期部分
-      final formattedDate = "${picked.year}-${picked.month}-${picked.day}";
-      setState(() {
-        dateController.text = formattedDate;
-      });
-    }
-  }
-
   Future<void> _saveDataAndReturnToHomePage() async {
     // 獲取新的數據
+    final int update_id = widget.expenditure_id;
     String updatedType = selectedType;
     String updatedDate = dateController.text;
     String updatedDollar = dollarController.text;
@@ -322,24 +304,39 @@ class _ExpenditureDeleteScreenState extends State<ExpenditureDeleteScreen>
     try {
       // 发送HTTP PUT请求
       final response = await http.put(
-        Uri.parse('https://db-accounting.azurewebsites.net/api/expenditures/$typeId'),
+        Uri.parse('https://db-accounting.azurewebsites.net/api/expenditures/$update_id'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: requestBody,
       );
 
-      if (response.statusCode == 200) {
-        // 返回上一个页面
         Navigator.of(context).pop();
-      } else {
-      }
+        print(response.body);
     } catch (e) {
       // 捕获异常，处理网络请求出错的情况
       print('Error: $e');
     }
-
-    // 通過 Navigator 返回上一個頁面
-    Navigator.of(context).pop();
   }
+
+  Future<void> _deleteDataAndReturnToHomePage() async {
+    final int delet_id = widget.expenditure_id;
+
+    try {
+      // 发送HTTP DELETE请求
+      final response = await http.delete(
+        Uri.parse('https://db-accounting.azurewebsites.net/api/expenditures/$delet_id'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      Navigator.of(context).pop(true);
+      print(response.body);
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+
 }

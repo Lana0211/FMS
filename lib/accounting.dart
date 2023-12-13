@@ -179,21 +179,26 @@ class _AccountingScreenState extends State<AccountingScreen> {
                           type: record['type'],
                           date: record['date'],
                           dollar: record['amount'],
+                          expenditure_id: record['expenditure_id'],
                         ),
                       ),
-                    );
+                    ).then((_) {
+                      fetchRecords(); // 在这里调用fetchRecords方法来重新获取数据
+                    });
                   } else {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => IncomeDeleteScreen(
-                          type: 'initialType',
-                          date: 'initialDate',
-                          dollar: 'initialDollar',
-                          incomeId: 1, // Replace with the actual income ID
+                          type: record['type'],
+                          date: record['date'],
+                          dollar: record['amount'],
+                          income_id: record['income_id'], // Replace with the actual income ID
                         ),
                       ),
-                    );
+                    ).then((_) {
+                      fetchRecords(); // 在这里调用fetchRecords方法来重新获取数据
+                    });
                   }
                 },
               ),
@@ -202,23 +207,5 @@ class _AccountingScreenState extends State<AccountingScreen> {
         )
     );
   }
-  void _navigateToTransactionDeleteScreen() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ExpenditureDeleteScreen(
-          type: 'initialType', // 初始的 type
-          date: 'initialDate', // 初始的 date
-          dollar: 'initialDollar', // 初始的 dollar
-        ),
-      ),
-    );
 
-    // 如果結果不為 null，表示用戶點擊了保存按鈕，並且有新數據返回
-    if (result != null) {
-      // String updatedType = result['type'];
-      // String updatedDate = result['date'];
-      // String updatedDollar = result['dollar'];
-    }
-  }
 }
