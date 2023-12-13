@@ -85,7 +85,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.remove('user_id');
+
                       // Navigate to the login screen on logout
                       Navigator.pushReplacement(
                         context,
